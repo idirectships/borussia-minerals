@@ -1,0 +1,103 @@
+/*
+ * Google Fonts: Consider migrating to next/font for better performance
+ * See: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
+ * Preconnect links added in layout.tsx as interim optimization
+ */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Core palette - deep blacks */
+  --background: 220 10% 6%;
+  --foreground: 220 10% 95%;
+
+  /* Card surfaces */
+  --card: 220 10% 8%;
+  --card-foreground: 220 10% 95%;
+
+  --popover: 220 10% 8%;
+  --popover-foreground: 220 10% 95%;
+
+  /* Silver/Platinum accents - primary brand color */
+  --primary: 220 15% 75%;
+  --primary-foreground: 220 10% 8%;
+
+  /* Muted cool tones */
+  --secondary: 220 8% 14%;
+  --secondary-foreground: 220 10% 85%;
+
+  --muted: 220 8% 18%;
+  --muted-foreground: 220 8% 55%;
+
+  /* Warm amber accent (matching wulfenite crystal) */
+  --accent: 32 90% 55%;
+  --accent-foreground: 0 0% 5%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 220 10% 20%;
+  --input: 220 10% 20%;
+  --ring: 220 15% 75%;
+
+  --radius: 0.25rem;
+
+  /* Custom properties - Silver/Platinum */
+  --silver-gradient: linear-gradient(135deg, hsl(220 15% 65%), hsl(220 20% 82%), hsl(220 15% 65%));
+  --silver-shimmer: linear-gradient(90deg, hsl(220 12% 60%), hsl(220 25% 88%), hsl(220 12% 60%));
+  --platinum-glow: 0 0 40px hsla(220, 15%, 75%, 0.25);
+  --matte-texture: radial-gradient(ellipse at 50% 50%, hsl(220 10% 7%) 0%, hsl(220 10% 4%) 100%);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Montserrat', system-ui, sans-serif;
+
+  /* Shadows */
+  --shadow-card: 0 25px 50px -12px hsla(0, 0%, 0%, 0.8);
+  --shadow-silver: 0 0 30px hsla(220, 15%, 75%, 0.2);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  /* Silver gradient text effect */
+  .text-silver-gradient {
+    background: var(--silver-shimmer);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Gradient border card */
+  .silver-border {
+    border: 1px solid transparent;
+    background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+                var(--silver-gradient) border-box;
+  }
+
+  /* Matte textured background */
+  .matte-surface {
+    background: var(--matte-texture);
+  }
+
+  /* Platinum glow effect */
+  .platinum-glow {
+    box-shadow: var(--platinum-glow);
+  }
+}
