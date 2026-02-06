@@ -2,13 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Instagram } from "lucide-react";
 import { Navigation } from "@/components/navigation";
-import { SpecimenCard } from "@/components/specimen-card";
+
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
-import { specimens as allSpecimens, CONTACT_EMAIL, INSTAGRAM_HANDLE } from "@/lib/data";
-
-// Featured specimens for the home page collection section
-const featuredSpecimens = allSpecimens.filter((s) => s.featured);
+import { CONTACT_EMAIL, INSTAGRAM_HANDLE } from "@/lib/data";
 
 export default function Home() {
   return (
@@ -37,14 +34,14 @@ export default function Home() {
               </div>
 
               <p className="text-muted-foreground text-lg leading-relaxed max-w-lg">
-                Museum-quality mineral specimens from around the world.
-                Arizona wulfenite from our own Fat Jack Mine.
+                Museum-quality mineral specimens from Arizona&apos;s
+                Fat Jack Mine.
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Link href="/shop">
+                <Link href="/fat-jack">
                   <Button variant="hero" size="lg">
-                    View Collection
+                    Fat Jack Mine
                   </Button>
                 </Link>
                 <Link href="#contact">
@@ -77,27 +74,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Collection Section */}
-      <section id="collection" className="py-24 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              Signature Pieces
-            </span>
-            <h2 className="font-display text-4xl md:text-5xl text-silver-gradient animate-shimmer mt-4">
-              The Collection
-            </h2>
-          </div>
-
-          <div className="space-y-12">
-            {featuredSpecimens.map((specimen, index) => (
-              <SpecimenCard
-                key={specimen.name}
-                specimen={specimen}
-                index={index}
-              />
-            ))}
-          </div>
+      {/* New Discovery Tease */}
+      <section className="py-6 px-6 md:px-12 border-t border-border/50 border-b border-b-border/50">
+        <div className="max-w-5xl mx-auto text-center">
+          <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            New discovery at the Fat Jack Mine &mdash; details coming soon
+          </span>
         </div>
       </section>
 

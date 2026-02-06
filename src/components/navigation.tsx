@@ -4,13 +4,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { CartButton } from "@/components/cart-button";
+
 
 const navLinks = [
-  { href: "/#collection", label: "Collection" },
-  { href: "/shop", label: "Shop" },
-  { href: "/fat-jack", label: "Fat Jack" },
+  { href: "/fat-jack", label: "Fat Jack Mine" },
   { href: "/events", label: "Events" },
+  { href: "/#about", label: "About" },
   { href: "/#contact", label: "Contact" },
 ];
 
@@ -59,12 +58,10 @@ export function Navigation() {
               {link.label}
             </Link>
           ))}
-          <CartButton />
         </div>
 
         {/* Mobile Controls */}
         <div className="flex items-center gap-4 md:hidden">
-          <CartButton />
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-muted-foreground hover:text-primary transition-colors"

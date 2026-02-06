@@ -5,9 +5,8 @@ import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { MineHero } from "@/components/mine-hero";
 import { MineInfo } from "@/components/mine-info";
-import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
-import { getMineBySlug, getSpecimensByMine } from "@/lib/data";
+import { getMineBySlug } from "@/lib/data";
 
 export const metadata = {
   title: "Fat Jack Mine | Borussia Minerals",
@@ -21,11 +20,6 @@ export default function FatJackPage() {
   if (!mine) {
     notFound();
   }
-
-  const specimens = getSpecimensByMine("fat-jack");
-  const availableSpecimens = specimens.filter(
-    (s) => s.availability === "available"
-  );
 
   return (
     <main className="min-h-screen">
@@ -57,40 +51,21 @@ export default function FatJackPage() {
         </div>
       </section>
 
-      {/* Specimens from this Mine */}
-      {specimens.length > 0 && (
-        <section className="py-16 px-6 md:px-12 border-t border-border">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  From Our Collection
-                </span>
-                <h2 className="font-display text-3xl text-silver-gradient animate-shimmer mt-2">
-                  Fat Jack Specimens
-                </h2>
-              </div>
-              <span className="text-sm text-muted-foreground">
-                {availableSpecimens.length} of {specimens.length} available
-              </span>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {specimens.map((specimen) => (
-                <ProductCard key={specimen.id} specimen={specimen} />
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <Link href="/shop?mine=fat-jack">
-                <Button variant="heroOutline" size="lg">
-                  View All Fat Jack Specimens
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      {/* New Discovery Teaser */}
+      <section className="py-16 px-6 md:px-12 border-t border-border">
+        <div className="max-w-3xl mx-auto text-center">
+          <span className="text-xs uppercase tracking-[0.3em] text-accent">
+            New Discovery
+          </span>
+          <h2 className="font-display text-3xl md:text-4xl text-silver-gradient animate-shimmer mt-4 mb-6">
+            New Pocket Uncovered
+          </h2>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            A significant new pocket has been discovered at the Fat Jack Mine.
+            Details and specimens coming soon. Contact us for inquiries.
+          </p>
+        </div>
+      </section>
 
       {/* CTA Section */}
       <section className="py-16 px-6 md:px-12 border-t border-border">
