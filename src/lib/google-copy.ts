@@ -45,20 +45,25 @@ export async function fetchAllCopy(): Promise<CopyEntry[]> {
   const sheets = google.sheets({ version: "v4", auth });
   const sheetId = getSheetId();
 
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId: sheetId,
-    range: "Copy!A2:D",
-  });
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: "Copy!A2:D",
+    });
 
-  const rows = response.data.values || [];
-  copyCache = rows.map((row) => ({
-    key: row[0] || "",
-    value: row[1] || "",
-    section: row[2] || "",
-    page: row[3] || "",
-  }));
+    const rows = response.data.values || [];
+    copyCache = rows.map((row) => ({
+      key: row[0] || "",
+      value: row[1] || "",
+      section: row[2] || "",
+      page: row[3] || "",
+    }));
 
-  return copyCache;
+    return copyCache;
+  } catch (err) {
+    console.warn("Google Sheets copy fetch failed — returning empty:", (err as Error).message);
+    return [];
+  }
 }
 
 // Get all copy for a specific page

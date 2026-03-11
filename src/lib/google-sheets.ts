@@ -83,33 +83,38 @@ export async function fetchSpecimens(): Promise<Specimen[]> {
   const sheets = google.sheets({ version: "v4", auth });
   const sheetId = getSheetId();
 
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId: sheetId,
-    range: "Sheet1!A2:L", // Skip header row
-  });
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: "Sheet1!A2:L", // Skip header row
+    });
 
-  const rows = response.data.values;
-  if (!rows || rows.length === 0) {
+    const rows = response.data.values;
+    if (!rows || rows.length === 0) {
+      return [];
+    }
+
+    return rows
+      .map((row): SheetRow => ({
+        id: row[0] || "",
+        name: row[1] || "",
+        mineral: row[2] || "",
+        locality: row[3] || "",
+        crystalSystem: row[4] || "",
+        dimensions: row[5] || "",
+        weight: row[6] || "",
+        price: row[7] || "",
+        availability: row[8] || "available",
+        description: row[9] || "",
+        photoIds: row[10] || "",
+        notes: row[11] || "",
+      }))
+      .filter((row) => row.id && row.name) // Skip empty rows
+      .map(rowToSpecimen);
+  } catch (err) {
+    console.warn("Google Sheets fetch failed — returning empty specimens:", (err as Error).message);
     return [];
   }
-
-  return rows
-    .map((row): SheetRow => ({
-      id: row[0] || "",
-      name: row[1] || "",
-      mineral: row[2] || "",
-      locality: row[3] || "",
-      crystalSystem: row[4] || "",
-      dimensions: row[5] || "",
-      weight: row[6] || "",
-      price: row[7] || "",
-      availability: row[8] || "available",
-      description: row[9] || "",
-      photoIds: row[10] || "",
-      notes: row[11] || "",
-    }))
-    .filter((row) => row.id && row.name) // Skip empty rows
-    .map(rowToSpecimen);
 }
 
 export async function fetchSpecimenById(
