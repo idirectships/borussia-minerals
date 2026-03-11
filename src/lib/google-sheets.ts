@@ -4,7 +4,7 @@ import type { Specimen } from "@/types";
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 
 // Cache to avoid redundant API calls during build (same pattern as google-copy.ts)
-let specimensCache: Specimen[] | null = null;
+let allSpecimensCache: Specimen[] | null = null;
 
 function getAuth() {
   const key = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -40,6 +40,7 @@ interface SheetRow {
   description: string;
   photoIds: string;
   notes: string;
+  publishStatus: string;
 }
 
 function rowToSpecimen(row: SheetRow): Specimen {
@@ -74,11 +75,12 @@ function rowToSpecimen(row: SheetRow): Specimen {
     price: isNaN(price!) ? undefined : price,
     availability,
     mineralGroup: row.mineral || undefined,
+    publishStatus: (row.publishStatus || "published") as "draft" | "review" | "published",
   };
 }
 
-export async function fetchSpecimens(): Promise<Specimen[]> {
-  if (specimensCache) return specimensCache;
+export async function fetchAllSpecimens(): Promise<Specimen[]> {
+  if (allSpecimensCache) return allSpecimensCache;
 
   const auth = getAuth();
   if (!auth) {
@@ -91,7 +93,7 @@ export async function fetchSpecimens(): Promise<Specimen[]> {
     const sheetId = getSheetId();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
-      range: "Sheet1!A2:L", // Skip header row
+      range: "Sheet1!A2:M", // Skip header row (A-M, includes publish_status)
     });
 
     const rows = response.data.values;
@@ -99,7 +101,7 @@ export async function fetchSpecimens(): Promise<Specimen[]> {
       return [];
     }
 
-    specimensCache = rows
+    allSpecimensCache = rows
       .map((row): SheetRow => ({
         id: row[0] || "",
         name: row[1] || "",
@@ -113,15 +115,21 @@ export async function fetchSpecimens(): Promise<Specimen[]> {
         description: row[9] || "",
         photoIds: row[10] || "",
         notes: row[11] || "",
+        publishStatus: row[12] || "published",
       }))
       .filter((row) => row.id && row.name) // Skip empty rows
       .map(rowToSpecimen);
 
-    return specimensCache;
+    return allSpecimensCache;
   } catch (err) {
     console.warn("Google Sheets fetch failed — returning empty specimens:", (err as Error).message);
     return [];
   }
+}
+
+export async function fetchSpecimens(): Promise<Specimen[]> {
+  const all = await fetchAllSpecimens();
+  return all.filter((s) => s.publishStatus === "published");
 }
 
 export async function fetchSpecimenById(

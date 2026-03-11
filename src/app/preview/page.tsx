@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { ProductCard } from "@/components/product-card";
-import { fetchSpecimens } from "@/lib/google-sheets";
+import { fetchAllSpecimens } from "@/lib/google-sheets";
 
 export const revalidate = 60;
 
@@ -27,7 +27,7 @@ export default async function PreviewPage({
     redirect("/");
   }
 
-  const specimens = await fetchSpecimens();
+  const specimens = await fetchAllSpecimens();
 
   const available = specimens.filter((s) => s.availability === "available");
   const sold = specimens.filter((s) => s.availability === "sold");
@@ -189,15 +189,28 @@ export default async function PreviewPage({
                       <p className="text-xs text-muted-foreground">{specimen.locality}</p>
                     </div>
                   </div>
-                  <span
-                    className={`text-xs uppercase tracking-wider px-3 py-1 rounded ${
-                      hasPhoto
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-amber-500/20 text-amber-400"
-                    }`}
-                  >
-                    {hasPhoto ? "Has Photo" : "Needs Photo"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-xs uppercase tracking-wider px-3 py-1 rounded ${
+                        specimen.publishStatus === "draft"
+                          ? "bg-yellow-500/20 text-yellow-400"
+                          : specimen.publishStatus === "review"
+                            ? "bg-blue-500/20 text-blue-400"
+                            : "bg-green-500/20 text-green-400"
+                      }`}
+                    >
+                      {specimen.publishStatus || "published"}
+                    </span>
+                    <span
+                      className={`text-xs uppercase tracking-wider px-3 py-1 rounded ${
+                        hasPhoto
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-amber-500/20 text-amber-400"
+                      }`}
+                    >
+                      {hasPhoto ? "Has Photo" : "Needs Photo"}
+                    </span>
+                  </div>
                 </div>
               );
             })}
