@@ -7,6 +7,7 @@ import { MineHero } from "@/components/mine-hero";
 import { MineInfo } from "@/components/mine-info";
 import { Button } from "@/components/ui/button";
 import { getMineBySlug } from "@/lib/data";
+import { getPageCopy } from "@/lib/google-copy";
 
 export const metadata = {
   title: "Fat Jack Mine | Borussia Minerals",
@@ -14,12 +15,21 @@ export const metadata = {
     "Learn about the Fat Jack Mine in Arizona's Bradshaw Mountains - a historic source of exceptional wulfenite specimens now owned by Borussia Minerals.",
 };
 
-export default function FatJackPage() {
+export default async function FatJackPage() {
   const mine = getMineBySlug("fat-jack");
+  const copy = await getPageCopy("fat-jack");
 
   if (!mine) {
     notFound();
   }
+
+  // Override mine data with Sheet copy if available
+  const mineWithCopy = {
+    ...mine,
+    history: copy.mine_history || mine.history,
+    geology: copy.mine_geology || mine.geology,
+    shortDescription: copy.mine_short_desc || mine.shortDescription,
+  };
 
   return (
     <main className="min-h-screen">
@@ -40,30 +50,14 @@ export default function FatJackPage() {
             Back to Home
           </Link>
 
-          <MineHero mine={mine} />
+          <MineHero mine={mineWithCopy} />
         </div>
       </section>
 
       {/* Mine Info */}
       <section className="py-16 px-6 md:px-12 border-t border-border">
         <div className="max-w-7xl mx-auto">
-          <MineInfo mine={mine} />
-        </div>
-      </section>
-
-      {/* New Discovery Teaser */}
-      <section className="py-16 px-6 md:px-12 border-t border-border">
-        <div className="max-w-3xl mx-auto text-center">
-          <span className="text-xs uppercase tracking-[0.3em] text-accent">
-            New Discovery
-          </span>
-          <h2 className="font-display text-3xl md:text-4xl text-silver-gradient animate-shimmer mt-4 mb-6">
-            New Pocket Uncovered
-          </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            A significant new pocket has been discovered at the Fat Jack Mine.
-            Details and specimens coming soon. Contact us for inquiries.
-          </p>
+          <MineInfo mine={mineWithCopy} />
         </div>
       </section>
 
@@ -71,18 +65,23 @@ export default function FatJackPage() {
       <section className="py-16 px-6 md:px-12 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-display text-2xl text-foreground mb-4">
-            Interested in Fat Jack specimens?
+            {copy.cta_heading || "Interested in Fat Jack specimens?"}
           </h2>
           <p className="text-muted-foreground mb-6">
-            As owners of the Fat Jack Mine, we have access to material not
-            available elsewhere. Contact us to discuss specimens for your
-            collection.
+            {copy.cta_body || "We have access to material not available elsewhere. Get in touch to discuss specimens for your collection."}
           </p>
-          <Link href="/#contact">
-            <Button variant="hero" size="lg">
-              Contact Us
-            </Button>
-          </Link>
+          <div className="flex justify-center gap-4">
+            <Link href="/shop">
+              <Button variant="hero" size="lg">
+                Browse Specimens
+              </Button>
+            </Link>
+            <Link href="/#contact">
+              <Button variant="heroOutline" size="lg">
+                Contact Us
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 

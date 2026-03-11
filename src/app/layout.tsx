@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
+import { CartProvider } from "@/hooks/use-cart";
 
 export const metadata: Metadata = {
   title: "Borussia Minerals | Fine Mineral Specimens",
@@ -28,7 +28,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
