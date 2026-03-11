@@ -6,7 +6,7 @@ const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 function getAuth() {
   const key = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
   if (!key) {
-    throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY not set");
+    return null;
   }
 
   const credentials = JSON.parse(key);
@@ -76,6 +76,10 @@ function rowToSpecimen(row: SheetRow): Specimen {
 
 export async function fetchSpecimens(): Promise<Specimen[]> {
   const auth = getAuth();
+  if (!auth) {
+    console.warn("Google Sheets not configured — returning empty specimens");
+    return [];
+  }
   const sheets = google.sheets({ version: "v4", auth });
   const sheetId = getSheetId();
 

@@ -16,7 +16,7 @@ let copyCache: CopyEntry[] | null = null;
 function getAuth() {
   const key = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
   if (!key) {
-    throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY not set");
+    return null;
   }
 
   const credentials = JSON.parse(key);
@@ -38,6 +38,10 @@ export async function fetchAllCopy(): Promise<CopyEntry[]> {
   if (copyCache) return copyCache;
 
   const auth = getAuth();
+  if (!auth) {
+    console.warn("Google Sheets not configured — returning empty copy");
+    return [];
+  }
   const sheets = google.sheets({ version: "v4", auth });
   const sheetId = getSheetId();
 
