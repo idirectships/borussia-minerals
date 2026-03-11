@@ -3,6 +3,9 @@ import type { Specimen } from "@/types";
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 
+// Cache to avoid redundant API calls during build (same pattern as google-copy.ts)
+let specimensCache: Specimen[] | null = null;
+
 function getAuth() {
   const key = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
   if (!key) {
@@ -75,15 +78,17 @@ function rowToSpecimen(row: SheetRow): Specimen {
 }
 
 export async function fetchSpecimens(): Promise<Specimen[]> {
+  if (specimensCache) return specimensCache;
+
   const auth = getAuth();
   if (!auth) {
     console.warn("Google Sheets not configured — returning empty specimens");
     return [];
   }
   const sheets = google.sheets({ version: "v4", auth });
-  const sheetId = getSheetId();
 
   try {
+    const sheetId = getSheetId();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
       range: "Sheet1!A2:L", // Skip header row
@@ -94,7 +99,7 @@ export async function fetchSpecimens(): Promise<Specimen[]> {
       return [];
     }
 
-    return rows
+    specimensCache = rows
       .map((row): SheetRow => ({
         id: row[0] || "",
         name: row[1] || "",
@@ -111,6 +116,8 @@ export async function fetchSpecimens(): Promise<Specimen[]> {
       }))
       .filter((row) => row.id && row.name) // Skip empty rows
       .map(rowToSpecimen);
+
+    return specimensCache;
   } catch (err) {
     console.warn("Google Sheets fetch failed — returning empty specimens:", (err as Error).message);
     return [];

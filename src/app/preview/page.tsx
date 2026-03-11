@@ -168,7 +168,7 @@ export default async function PreviewPage({
 
           <div className="space-y-3">
             {specimens.map((specimen) => {
-              const hasPhoto = specimen.image && !specimen.image.includes("wulfenite-hero");
+              const hasPhoto = specimen.image && !specimen.image.startsWith("/images/specimens/");
               return (
                 <div
                   key={specimen.id}

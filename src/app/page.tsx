@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { CONTACT_EMAIL, INSTAGRAM_HANDLE } from "@/lib/data";
 import { getPageCopy } from "@/lib/google-copy";
 
+export const revalidate = 60;
+
 export default async function Home() {
   const copy = await getPageCopy("homepage");
 

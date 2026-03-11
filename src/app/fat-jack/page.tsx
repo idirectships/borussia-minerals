@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { getMineBySlug } from "@/lib/data";
 import { getPageCopy } from "@/lib/google-copy";
 
+export const revalidate = 60;
+
 export const metadata = {
   title: "Fat Jack Mine | Borussia Minerals",
   description:
