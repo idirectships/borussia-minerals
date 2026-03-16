@@ -37,15 +37,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       url: canonicalUrl,
       siteName: "Borussia Minerals",
       type: "website",
-      ...(specimen.image && {
-        images: [{ url: specimen.image, alt: specimen.name }],
-      }),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      ...(specimen.image && { images: [specimen.image] }),
     },
   };
 }
