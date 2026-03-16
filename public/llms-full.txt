@@ -1,0 +1,59 @@
+# Borussia Minerals
+> Museum-quality mineral specimens from Arizona's Fat Jack Mine
+
+## What We Sell
+Fine mineral specimens sourced primarily from the Fat Jack Mine and other notable localities. Our inventory includes wulfenite, vanadinite, mimetite, cerussite, azurite, fluorite, benitoite, and malachite. Each specimen is hand-selected for scientific significance, aesthetic appeal, and documented provenance.
+
+## The Fat Jack Mine
+The Fat Jack Mine is a historic lead-zinc-silver mine in the Bradshaw Mountains near Crown King, Yavapai County, Arizona. Named after a prospector who worked claims in the district during the late 1800s gold rush, it was originally a lead, silver, and gold operation.
+
+The mine is renowned among collectors for producing exceptional wulfenite specimens — orange-red tabular crystals with adamantine luster formed by trace chromium in the crystal structure. Crystals typically form as thin tabular plates perched on matrix. The secondary mineral assemblage also includes vanadinite, mimetite, and cerussite, occurring in oxidized zones along fault structures in Precambrian metamorphic rock.
+
+Borussia Minerals acquired the Fat Jack Mine in June 2025. Specimens from this mine appear in museum and private collections worldwide. Recent work has uncovered a significant new pocket.
+
+## Specimen Details
+Each specimen listing includes:
+- High-resolution photography
+- Mineral name and group
+- Crystal system
+- Dimensions and weight
+- Locality and provenance
+- Luster and transparency
+- Availability status (available, sold, or reserved)
+
+### Selection Criteria
+Specimens are selected based on:
+- Scientific significance and crystal quality
+- Aesthetic appeal (form, color, luster)
+- Provenance and collecting history
+- Rarity within the locality or species
+
+## Pricing
+- Specimens under $5,000 display a listed price and can be purchased directly
+- Specimens at or above $5,000, or those without a set price, show "Price on Request" — contact us to discuss
+- Custom `priceDisplay` labels may appear for special pieces
+- Sold specimens are marked accordingly and remain visible for reference
+
+## Mineral Shows & Events
+Borussia Minerals exhibits at major international mineral shows:
+- Tucson Gem & Mineral Show (February, Tucson, Arizona)
+- Denver Gem & Mineral Show (September, Denver, Colorado)
+- Munich Mineral Show (October, Munich, Germany)
+
+Private viewings can be arranged by contacting us directly.
+
+## For Collectors & Institutions
+We welcome inquiries from private collectors and institutions. We have access to material from the Fat Jack Mine not available elsewhere. Contact us to discuss specimens for your collection or to arrange a private viewing.
+
+## Pages
+- / — Homepage, company overview, contact information
+- /shop — Browse all available specimens with prices, images, and filtering
+- /specimen/{id} — Individual specimen page with full details, provenance, dimensions, crystal system, and pricing
+- /fat-jack — Complete history and geology of the Fat Jack Mine
+- /events — Upcoming and past mineral shows and exhibitions
+- /card — Digital business card
+
+## Contact
+- Email: borussiaminerals@gmail.com
+- Instagram: @borussiaminerals
+- Website: https://borussiaminerals.com

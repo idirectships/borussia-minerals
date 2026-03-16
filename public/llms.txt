@@ -1,0 +1,17 @@
+# Borussia Minerals
+> Museum-quality mineral specimens from Arizona's Fat Jack Mine
+
+## What We Sell
+Fine mineral specimens — wulfenite, vanadinite, mimetite, cerussite, azurite, fluorite, malachite, and other collectible minerals — hand-selected from the historic Fat Jack Mine in Yavapai County, Arizona and other classic localities. Prices range from under $1,000 to $5,000+, with premium specimens available by inquiry.
+
+## Pages
+- / — Homepage, company overview, contact information
+- /shop — Browse all available specimens with prices, images, and details
+- /specimen/{id} — Individual specimen page with provenance, dimensions, crystal system, mineral group, and pricing
+- /fat-jack — History and geology of the Fat Jack Mine
+- /events — Upcoming mineral shows and exhibitions (Tucson, Denver, Munich)
+
+## Contact
+- Email: borussiaminerals@gmail.com
+- Instagram: @borussiaminerals
+- Website: https://borussiaminerals.com

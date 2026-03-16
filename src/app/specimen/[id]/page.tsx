@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { fetchSpecimens, fetchSpecimenById } from "@/lib/google-sheets";
 import { formatPrice } from "@/lib/utils";
+import JsonLd from "@/components/JsonLd";
 
 export const revalidate = 60;
 
@@ -19,9 +20,33 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const specimen = await fetchSpecimenById(id);
   if (!specimen) return { title: "Specimen Not Found | Borussia Minerals" };
+
+  const title = `${specimen.name} | Borussia Minerals`;
+  const description = specimen.description || `${specimen.name} mineral specimen from ${specimen.locality}`;
+  const canonicalUrl = `https://borussiaminerals.com/specimen/${id}`;
+
   return {
-    title: `${specimen.name} | Borussia Minerals`,
-    description: specimen.description || `${specimen.name} from ${specimen.locality}`,
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: "Borussia Minerals",
+      type: "website",
+      ...(specimen.image && {
+        images: [{ url: specimen.image, alt: specimen.name }],
+      }),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(specimen.image && { images: [specimen.image] }),
+    },
   };
 }
 
@@ -35,8 +60,63 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
 
   const priceText = formatPrice(specimen);
 
+  const additionalProperties = [
+    specimen.locality && {
+      "@type": "PropertyValue",
+      name: "Locality",
+      value: specimen.locality,
+    },
+    specimen.crystalSystem && {
+      "@type": "PropertyValue",
+      name: "Crystal System",
+      value: specimen.crystalSystem,
+    },
+    specimen.dimensions && {
+      "@type": "PropertyValue",
+      name: "Dimensions",
+      value: specimen.dimensions,
+    },
+    specimen.weight && {
+      "@type": "PropertyValue",
+      name: "Weight",
+      value: specimen.weight,
+    },
+    specimen.luster && {
+      "@type": "PropertyValue",
+      name: "Luster",
+      value: specimen.luster,
+    },
+  ].filter(Boolean);
+
   return (
     <main className="min-h-screen">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: specimen.name,
+          description:
+            specimen.description ||
+            `${specimen.name} mineral specimen from ${specimen.locality}`,
+          image: specimen.image,
+          brand: { "@type": "Brand", name: "Borussia Minerals" },
+          category: "Mineral Specimens",
+          offers: {
+            "@type": "Offer",
+            ...(specimen.price != null && { price: specimen.price }),
+            priceCurrency: "USD",
+            availability:
+              specimen.availability === "sold"
+                ? "https://schema.org/SoldOut"
+                : "https://schema.org/InStock",
+            url: `https://borussiaminerals.com/specimen/${specimen.id}`,
+          },
+          ...(additionalProperties.length > 0 && {
+            additionalProperty: additionalProperties,
+          }),
+        }}
+      />
+
       <section className="relative pt-32 pb-16 px-6 md:px-12">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />

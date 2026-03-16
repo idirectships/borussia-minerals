@@ -5,16 +5,35 @@ import { Navigation } from "@/components/navigation";
 
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
+import JsonLd from "@/components/JsonLd";
 import { CONTACT_EMAIL, INSTAGRAM_HANDLE } from "@/lib/data";
 import { getPageCopy } from "@/lib/google-copy";
 
 export const revalidate = 60;
 
+export const metadata = {
+  alternates: {
+    canonical: "https://borussiaminerals.com",
+  },
+};
+
 export default async function Home() {
   const copy = await getPageCopy("homepage");
 
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Borussia Minerals",
+    url: "https://borussiaminerals.com",
+    logo: "https://borussiaminerals.com/images/wulfenite-hero.jpg",
+    email: "borussiaminerals@gmail.com",
+    description: "Museum-quality mineral specimens from Arizona's Fat Jack Mine",
+    sameAs: ["https://instagram.com/borussiaminerals"],
+  };
+
   return (
     <main className="min-h-screen">
+      <JsonLd data={orgJsonLd} />
       {/* Hero Section - Centered Showcase */}
       <section className="relative min-h-screen flex items-center">
         {/* Ambient glow orbs */}

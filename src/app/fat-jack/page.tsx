@@ -15,6 +15,9 @@ export const metadata = {
   title: "Fat Jack Mine | Borussia Minerals",
   description:
     "Learn about the Fat Jack Mine in Arizona's Bradshaw Mountains - a historic source of exceptional wulfenite specimens now owned by Borussia Minerals.",
+  alternates: {
+    canonical: "https://borussiaminerals.com/fat-jack",
+  },
 };
 
 export default async function FatJackPage() {
