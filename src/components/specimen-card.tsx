@@ -24,13 +24,14 @@ export function SpecimenCard({ specimen, index }: SpecimenCardProps) {
       >
         {/* Image Column */}
         <div className="flex items-center justify-center md:[direction:ltr]">
-          <div className="relative max-w-xs md:max-w-sm w-full aspect-square">
+          <div className="relative max-w-xs md:max-w-sm w-full aspect-square" style={{ maskImage: "radial-gradient(ellipse 85% 85% at center, black 60%, transparent 100%)", WebkitMaskImage: "radial-gradient(ellipse 85% 85% at center, black 60%, transparent 100%)" }}>
             <Image
               src={specimen.image}
               alt={specimen.name}
               fill
               sizes="(max-width: 768px) 320px, 384px"
               className="object-contain"
+              unoptimized={specimen.image.includes("drive.google.com")}
             />
           </div>
         </div>

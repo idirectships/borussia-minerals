@@ -34,7 +34,7 @@ export function ProductCard({ specimen, className }: ProductCardProps) {
         )}
       >
         {/* Image */}
-        <div className="relative aspect-square bg-secondary/50">
+        <div className="relative aspect-square bg-gradient-to-b from-secondary/30 to-transparent">
           <Image
             src={specimen.image}
             alt={specimen.name}

@@ -68,6 +68,7 @@ export function CartDrawer() {
                         fill
                         sizes="80px"
                         className="object-contain p-2"
+                        unoptimized={item.specimen.image.includes("drive.google.com")}
                       />
                     </div>
 
