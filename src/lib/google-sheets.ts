@@ -1,7 +1,7 @@
 import { google } from "googleapis";
 import type { Specimen } from "@/types";
 
-const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
+const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 
 // Cache to avoid redundant API calls during build (same pattern as google-copy.ts)
 let allSpecimensCache: Specimen[] | null = null;

@@ -6,6 +6,8 @@
  * Script Properties required:
  *   DISCORD_WEBHOOK_URL  — Discord channel webhook
  *   VERCEL_DEPLOY_HOOK   — Vercel deploy hook URL
+ *   REVALIDATE_URL       — https://borussiaminerals.com/api/revalidate
+ *   REVALIDATE_SECRET    — Secret for on-demand ISR revalidation
  *   MAKE_WEBHOOK_URL     — Make.com webhook for Instagram posting
  *   DRIVE_ROOT_FOLDER    — Root Drive folder ID (1V-y4KOhhG8K3Z5Ppz-maPPmAEZYMCae1)
  *   LAST_DRIVE_CHECK     — ISO timestamp of last Drive scan (auto-managed)
@@ -112,11 +114,12 @@ function handleInventoryEdit_(e) {
     return;
   }
 
-  // Columns B-J on a published specimen → ISR handles refresh, just notify
+  // Columns B-J on a published specimen → trigger revalidation + notify
   if (col >= 2 && col <= 10) {
     var publishStatus = String(sheet.getRange(row, COL_PUBLISH_STATUS).getValue()).toLowerCase().trim();
     if (publishStatus === 'published') {
       var colName = getColumnName(col);
+      triggerRevalidation();
       postToDiscord('\uD83D\uDCDD ' + specimenName + ' updated: ' + colName + ' changed');
     }
   }
@@ -135,7 +138,7 @@ function handleCopyEdit_(e) {
   var key  = sheet.getRange(row, 1).getValue() || 'unknown';
   var page = sheet.getRange(row, 2).getValue() || 'unknown';
 
-  triggerVercelRebuild();
+  triggerRevalidation();
   postToDiscord('\uD83D\uDCDD Site copy updated: ' + key + ' on ' + page);
 }
 
@@ -386,6 +389,30 @@ function triggerVercelRebuild() {
     });
   } catch (err) {
     Logger.log('Vercel deploy hook failed: ' + err);
+  }
+}
+
+/**
+ * Triggers on-demand ISR revalidation via the /api/revalidate endpoint.
+ * Faster than a full Vercel rebuild — just busts the ISR cache.
+ */
+function triggerRevalidation() {
+  var props = PropertiesService.getScriptProperties();
+  var url = props.getProperty('REVALIDATE_URL');
+  var secret = props.getProperty('REVALIDATE_SECRET');
+  if (!url || !secret) {
+    Logger.log('REVALIDATE_URL or REVALIDATE_SECRET not set — skipping revalidation.');
+    return;
+  }
+
+  try {
+    UrlFetchApp.fetch(url, {
+      method: 'post',
+      headers: { 'x-revalidate-secret': secret },
+      muteHttpExceptions: true
+    });
+  } catch (err) {
+    Logger.log('Revalidation failed: ' + err);
   }
 }
 
