@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://borussiaminerals.com"),
   title: "Borussia Minerals | Fine Mineral Specimens",
   description:
-    "Borussia Minerals - Museum-quality mineral specimens from Arizona's Fat Jack Mine.",
+    "Borussia Minerals - Quality mineral specimens from Arizona's Fat Jack Mine.",
   openGraph: {
     title: "Borussia Minerals",
     description:
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
         url: "/images/wulfenite-hero.jpg",
         width: 1200,
         height: 630,
-        alt: "Borussia Minerals - Museum-quality mineral specimens",
+        alt: "Borussia Minerals - Quality mineral specimens",
       },
     ],
   },

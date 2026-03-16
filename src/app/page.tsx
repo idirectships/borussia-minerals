@@ -27,7 +27,7 @@ export default async function Home() {
     url: "https://borussiaminerals.com",
     logo: "https://borussiaminerals.com/images/wulfenite-hero.jpg",
     email: "borussiaminerals@gmail.com",
-    description: "Museum-quality mineral specimens from Arizona's Fat Jack Mine",
+    description: "Quality mineral specimens from Arizona's Fat Jack Mine",
     sameAs: ["https://instagram.com/borussiaminerals"],
   };
 
@@ -58,7 +58,7 @@ export default async function Home() {
               </div>
 
               <p className="text-muted-foreground text-lg leading-relaxed max-w-lg">
-                {copy.hero_subheading || "Museum-quality mineral specimens from Arizona's Fat Jack Mine."}
+                {copy.hero_subheading || "Quality mineral specimens from Arizona's Fat Jack Mine."}
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -77,10 +77,10 @@ export default async function Home() {
 
             {/* Hero Image - The Star */}
             <div className="flex justify-center lg:justify-end order-1 lg:order-2">
-              <div className="relative aspect-[3/4] w-full max-w-md">
+              <div className="relative aspect-[3/4] w-full max-w-md" style={{ maskImage: "radial-gradient(ellipse 80% 80% at center, black 50%, transparent 100%)", WebkitMaskImage: "radial-gradient(ellipse 80% 80% at center, black 50%, transparent 100%)" }}>
                 <Image
                   src="/images/wulfenite-hero.jpg"
-                  alt="Museum-quality Wulfenite on Matrix - Borussia Minerals signature specimen"
+                  alt="Wulfenite on Matrix - Borussia Minerals signature specimen"
                   fill
                   priority
                   className="object-contain"
@@ -116,7 +116,7 @@ export default async function Home() {
             {copy.about_heading || "About Borussia Minerals"}
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            {copy.about_body || "At Borussia Minerals, we specialize in mineral specimens from Arizona. Each piece is carefully selected for its scientific significance, rarity, and visual impact."}
+            {copy.about_body || "At Borussia Minerals, we specialize in mineral specimens from Arizona."}
           </p>
         </div>
       </section>
