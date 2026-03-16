@@ -39,7 +39,7 @@ export function Navigation() {
               src="/images/wulfenite-hero.jpg"
               alt=""
               fill
-              className="object-cover"
+              className="object-cover scale-[2.2] object-[35%_30%]"
               sizes="40px"
             />
           </div>
