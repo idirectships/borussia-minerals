@@ -5,11 +5,35 @@ import { Navigation } from "@/components/navigation";
 
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
+import JsonLd from "@/components/JsonLd";
 import { CONTACT_EMAIL, INSTAGRAM_HANDLE } from "@/lib/data";
+import { getPageCopy } from "@/lib/google-copy";
 
-export default function Home() {
+export const revalidate = 60;
+
+export const metadata = {
+  alternates: {
+    canonical: "https://borussiaminerals.com",
+  },
+};
+
+export default async function Home() {
+  const copy = await getPageCopy("homepage");
+
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Borussia Minerals",
+    url: "https://borussiaminerals.com",
+    logo: "https://borussiaminerals.com/images/wulfenite-hero.jpg",
+    email: "borussiaminerals@gmail.com",
+    description: "Museum-quality mineral specimens from Arizona's Fat Jack Mine",
+    sameAs: ["https://instagram.com/borussiaminerals"],
+  };
+
   return (
     <main className="min-h-screen">
+      <JsonLd data={orgJsonLd} />
       {/* Hero Section - Centered Showcase */}
       <section className="relative min-h-screen flex items-center">
         {/* Ambient glow orbs */}
@@ -26,27 +50,26 @@ export default function Home() {
             <div className="space-y-8 order-2 lg:order-1">
               <div className="space-y-4">
                 <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  Fine Mineral Specimens
+                  {copy.hero_label || "Fine Mineral Specimens"}
                 </span>
                 <h1 className="font-display text-5xl md:text-6xl lg:text-7xl text-silver-gradient animate-shimmer">
-                  Borussia Minerals
+                  {copy.hero_heading || "Borussia Minerals"}
                 </h1>
               </div>
 
               <p className="text-muted-foreground text-lg leading-relaxed max-w-lg">
-                Museum-quality mineral specimens from Arizona&apos;s
-                Fat Jack Mine.
+                {copy.hero_subheading || "Museum-quality mineral specimens from Arizona's Fat Jack Mine."}
               </p>
 
               <div className="flex flex-wrap gap-4">
                 <Link href="/fat-jack">
                   <Button variant="hero" size="lg">
-                    Fat Jack Mine
+                    {copy.hero_cta_1 || "Fat Jack Mine"}
                   </Button>
                 </Link>
                 <Link href="#contact">
                   <Button variant="heroOutline" size="lg">
-                    Contact Us
+                    {copy.hero_cta_2 || "Contact Us"}
                   </Button>
                 </Link>
               </div>
@@ -78,7 +101,7 @@ export default function Home() {
       <section className="py-6 px-6 md:px-12 border-t border-border/50 border-b border-b-border/50">
         <div className="max-w-5xl mx-auto text-center">
           <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            New discovery at the Fat Jack Mine &mdash; details coming soon
+            {copy.announcement || "New discovery at the Fat Jack Mine \u2014 details coming soon"}
           </span>
         </div>
       </section>
@@ -87,18 +110,13 @@ export default function Home() {
       <section id="about" className="py-24 px-6 md:px-12 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
           <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Our Philosophy
+            {copy.about_label || "Our Philosophy"}
           </span>
           <h2 className="font-display text-4xl md:text-5xl text-silver-gradient animate-shimmer mt-4 mb-8">
-            About Borussia Minerals
+            {copy.about_heading || "About Borussia Minerals"}
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            At Borussia Minerals, we believe exceptional specimens deserve
-            exceptional presentation. Founded with a passion for mineralogy and
-            an eye for the extraordinary, we source pieces that exemplify the
-            pinnacle of natural crystalline beauty. Each specimen in our
-            collection is carefully selected for its scientific significance,
-            aesthetic appeal, and provenance.
+            {copy.about_body || "At Borussia Minerals, we specialize in mineral specimens from Arizona. Each piece is carefully selected for its scientific significance, rarity, and visual impact."}
           </p>
         </div>
       </section>
@@ -110,14 +128,13 @@ export default function Home() {
       >
         <div className="max-w-3xl mx-auto text-center">
           <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Get In Touch
+            {copy.contact_label || "Get In Touch"}
           </span>
           <h2 className="font-display text-4xl md:text-5xl text-silver-gradient animate-shimmer mt-4 mb-8">
-            Contact
+            {copy.contact_heading || "Contact"}
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-            Interested in acquiring a piece for your collection? We welcome
-            inquiries from serious collectors and institutions.
+            {copy.contact_body || "Interested in a specimen? We welcome inquiries from collectors and institutions."}
           </p>
 
           <div className="flex flex-col items-center gap-6">

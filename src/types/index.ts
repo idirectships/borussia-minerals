@@ -18,6 +18,7 @@ export interface Specimen {
   luster?: string;
   transparency?: string;
   provenance?: string;
+  publishStatus?: "draft" | "review" | "published";
 }
 
 export interface Mine {
