@@ -31,7 +31,7 @@ export function SpecimenCard({ specimen, index }: SpecimenCardProps) {
               fill
               sizes="(max-width: 768px) 320px, 384px"
               className="object-contain"
-              unoptimized={specimen.image.includes("drive.google.com")}
+
             />
           </div>
         </div>

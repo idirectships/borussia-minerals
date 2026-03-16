@@ -57,7 +57,7 @@ function rowToSpecimen(row: SheetRow): Specimen {
 
   let image: string;
   if (photoIds.length > 0) {
-    image = `https://drive.google.com/uc?export=view&id=${photoIds[0]}`;
+    image = `https://lh3.googleusercontent.com/d/${photoIds[0]}`;
   } else {
     // Local specimen photo: /images/specimens/{id}.jpg
     image = `/images/specimens/${row.id}.jpg`;

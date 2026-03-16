@@ -182,7 +182,7 @@ export default async function PreviewPage({
                         fill
                         className="object-cover"
                         sizes="48px"
-                        unoptimized={specimen.image.includes("drive.google.com")}
+
                       />
                     </div>
                     <div>
