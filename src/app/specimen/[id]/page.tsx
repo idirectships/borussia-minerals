@@ -140,7 +140,7 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
                   priority
                   className="object-contain p-8"
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  unoptimized={specimen.image.includes("drive.google.com")}
+
                 />
                 {specimen.availability === "sold" && (
                   <div className="absolute top-4 right-4 bg-destructive/90 text-destructive-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded">
