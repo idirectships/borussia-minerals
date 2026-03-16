@@ -93,7 +93,7 @@ export async function fetchAllSpecimens(): Promise<Specimen[]> {
     const sheetId = getSheetId();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
-      range: "Sheet1!A2:M", // Skip header row (A-M, includes publish_status)
+      range: "Inventory!A2:M", // Skip header row (A-M, includes publish_status)
     });
 
     const rows = response.data.values;

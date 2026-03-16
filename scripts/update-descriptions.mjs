@@ -7,7 +7,7 @@
  *
  * Reads GOOGLE_SERVICE_ACCOUNT_KEY and GOOGLE_SHEET_ID from .env.local,
  * then writes BLUF descriptions to column J (description) for each
- * specimen ID found in Sheet1.
+ * specimen ID found in Inventory.
  */
 
 import { readFileSync } from "fs";
@@ -112,7 +112,7 @@ async function main() {
   // Read all rows (A2:M) — same range as google-sheets.ts
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: "Sheet1!A2:M",
+    range: "Inventory!A2:M",
   });
 
   const rows = res.data.values;
@@ -143,7 +143,7 @@ async function main() {
       continue;
     }
     data.push({
-      range: `Sheet1!J${rowNum}`,
+      range: `Inventory!J${rowNum}`,
       values: [[description]],
     });
     updated.push({ id: specimenId, row: rowNum });
