@@ -138,3 +138,58 @@ export async function fetchSpecimenById(
   const specimens = await fetchSpecimens();
   return specimens.find((s) => s.id === id);
 }
+
+/**
+ * Marks one or more specimens as "sold" in the Google Sheet.
+ * Column I (index 8, 1-based = column 9) is "availability".
+ * Scans Inventory!A2:A to find the row index, then patches column I.
+ */
+export async function markSpecimensAsSold(specimenIds: string[]): Promise<void> {
+  if (specimenIds.length === 0) return;
+
+  const auth = getAuth();
+  if (!auth) {
+    console.error("markSpecimensAsSold: GOOGLE_SERVICE_ACCOUNT_KEY not configured");
+    return;
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+  const sheetId = getSheetId();
+
+  // Fetch all IDs from column A to find row positions (data starts at row 2)
+  const idResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId: sheetId,
+    range: "Inventory!A2:A",
+  });
+
+  const idRows = idResponse.data.values ?? [];
+  const updates: { range: string; values: string[][] }[] = [];
+
+  for (const specimenId of specimenIds) {
+    const rowIndex = idRows.findIndex((row) => row[0] === specimenId);
+    if (rowIndex === -1) {
+      console.warn(`markSpecimensAsSold: specimen ${specimenId} not found in sheet`);
+      continue;
+    }
+    // Sheet row number: data starts at row 2, so rowIndex 0 → row 2
+    const sheetRow = rowIndex + 2;
+    // Column I = availability (columns: A=id, B=name, C=mineral, D=locality,
+    // E=crystalSystem, F=dimensions, G=weight, H=price, I=availability)
+    updates.push({ range: `Inventory!I${sheetRow}`, values: [["sold"]] });
+  }
+
+  if (updates.length === 0) return;
+
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: sheetId,
+    requestBody: {
+      valueInputOption: "RAW",
+      data: updates,
+    },
+  });
+
+  // Bust the in-process cache so subsequent reads reflect the sold status
+  allSpecimensCache = null;
+
+  console.log(`markSpecimensAsSold: marked ${updates.length} specimen(s) as sold`, specimenIds);
+}
