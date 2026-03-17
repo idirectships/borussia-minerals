@@ -2,7 +2,7 @@ import type { Specimen, FilterOptions } from "@/types";
 import { wulfeniteSpecimens } from "./wulfenite";
 import { fluoriteSpecimens } from "./fluorite";
 import { azuriteSpecimens } from "./azurite";
-import { benitoiteSpecimens, malachiteSpecimens } from "./other";
+import { benitoiteSpecimens, malachiteSpecimens, chrysocollaSpecimens, cupriteSpecimens } from "./other";
 
 // All specimens aggregated
 export const specimens: Specimen[] = [
@@ -11,13 +11,15 @@ export const specimens: Specimen[] = [
   ...fluoriteSpecimens,
   ...azuriteSpecimens,
   ...malachiteSpecimens,
+  ...chrysocollaSpecimens,
+  ...cupriteSpecimens,
 ];
 
 // Re-export individual collections for direct access
 export { wulfeniteSpecimens } from "./wulfenite";
 export { fluoriteSpecimens } from "./fluorite";
 export { azuriteSpecimens } from "./azurite";
-export { benitoiteSpecimens, malachiteSpecimens } from "./other";
+export { benitoiteSpecimens, malachiteSpecimens, chrysocollaSpecimens, cupriteSpecimens } from "./other";
 
 // Query functions
 export function getSpecimenById(id: string): Specimen | undefined {
