@@ -12,6 +12,20 @@ export const metadata = {
 
 const upcomingEvents: Event[] = [
   {
+    title: "33rd Flagg Mineral Foundation — Minerals of Arizona Symposium",
+    date: "2026-03-28",
+    time: "8:00 AM - 5:00 PM",
+    location: "Gilbert, Arizona",
+    venue: "Southeast Regional Library, 775 N. Greenfield Rd., Gilbert, AZ 85234",
+    description:
+      "Arizona's premier mineral symposium featuring lectures on carbonates, mineral sales, and dealer exhibitions. Speakers include experts on Arizona calcites, rhodochrosite, and titanium minerals. Book signings by Wayne Thompson (Ikons).",
+    type: "show",
+    link: "https://flaggmineralfoundation.org/home/minerals-of-az-symposium/",
+  },
+];
+
+const pastEvents: Event[] = [
+  {
     title: "Tucson Gem & Mineral Show",
     date: "2025-02-13",
     time: "10:00 AM - 6:00 PM",
@@ -43,9 +57,6 @@ const upcomingEvents: Event[] = [
       "Europe's largest mineral fair. Explore our curated selection of world-class specimens from classic European localities.",
     type: "show",
   },
-];
-
-const pastEvents: Event[] = [
   {
     title: "Sainte-Marie-aux-Mines Show",
     date: "2024-06-27",
