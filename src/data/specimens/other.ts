@@ -8,6 +8,7 @@ export const malachiteSpecimens: Specimen[] = [
     id: "mala-001",
     name: "Malachite Pseudomorph after Azurite",
     image: "/images/specimens/mala-002.jpg",
+    images: ["/images/specimens/mala-002.jpg"],
     locality: "New Cornelia Mine, Ajo, Pima County, Arizona, USA",
     crystalSystem: "Monoclinic",
     dimensions: "2¾ × 3⅞ in",

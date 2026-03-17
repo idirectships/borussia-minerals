@@ -5,6 +5,11 @@ export const azuriteSpecimens: Specimen[] = [
     id: "azur-001",
     name: "Azurite with Selenite",
     image: "/images/specimens/azur-003.jpg",
+    images: [
+      "/images/specimens/azur-003.jpg",
+      "/images/specimens/azur-004.jpg",
+      "/images/specimens/azur-006.jpg",
+    ],
     locality: "Morenci Mine, Greenlee County, Arizona, USA",
     crystalSystem: "Monoclinic",
     dimensions: "8.5 × 4.2 × 3.8 cm",

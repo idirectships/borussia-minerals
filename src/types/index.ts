@@ -4,6 +4,7 @@ export interface Specimen {
   id: string;
   name: string;
   image: string;
+  images?: string[];
   locality: string;
   crystalSystem: string;
   dimensions: string;

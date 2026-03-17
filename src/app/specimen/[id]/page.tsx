@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
+import { SpecimenGallery } from "@/components/specimen-gallery";
 import { Button } from "@/components/ui/button";
 import { fetchSpecimens, fetchSpecimenById } from "@/lib/google-sheets";
 import { formatPrice } from "@/lib/utils";
@@ -130,29 +130,22 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
           </Link>
 
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Image */}
-            <div className="silver-border matte-surface rounded-lg overflow-hidden">
-              <div className="relative aspect-square bg-secondary/50">
-                <Image
-                  src={specimen.image}
-                  alt={specimen.name}
-                  fill
-                  priority
-                  className="object-contain p-8"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-
-                />
-                {specimen.availability === "sold" && (
-                  <div className="absolute top-4 right-4 bg-destructive/90 text-destructive-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded">
-                    Sold
-                  </div>
-                )}
-                {specimen.availability === "available" && (
-                  <div className="absolute top-4 right-4 bg-primary/90 text-primary-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded">
-                    Available
-                  </div>
-                )}
-              </div>
+            {/* Image / Gallery */}
+            <div className="relative">
+              <SpecimenGallery
+                images={specimen.images ?? [specimen.image]}
+                name={specimen.name}
+              />
+              {specimen.availability === "sold" && (
+                <div className="absolute top-4 right-4 bg-destructive/90 text-destructive-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded z-10">
+                  Sold
+                </div>
+              )}
+              {specimen.availability === "available" && (
+                <div className="absolute top-4 right-4 bg-primary/90 text-primary-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded z-10">
+                  Available
+                </div>
+              )}
             </div>
 
             {/* Details */}

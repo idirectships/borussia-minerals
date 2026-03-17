@@ -56,8 +56,12 @@ function rowToSpecimen(row: SheetRow): Specimen {
     : [];
 
   let image: string;
+  let images: string[] | undefined;
   if (photoIds.length > 0) {
     image = `https://lh3.googleusercontent.com/d/${photoIds[0]}`;
+    if (photoIds.length > 1) {
+      images = photoIds.map((id) => `https://lh3.googleusercontent.com/d/${id}`);
+    }
   } else {
     // Local specimen photo: /images/specimens/{id}.jpg
     image = `/images/specimens/${row.id}.jpg`;
@@ -67,6 +71,7 @@ function rowToSpecimen(row: SheetRow): Specimen {
     id: row.id,
     name: row.name,
     image,
+    ...(images && { images }),
     locality: row.locality || "",
     crystalSystem: row.crystalSystem || "",
     dimensions: row.dimensions || "",
