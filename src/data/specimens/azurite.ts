@@ -4,7 +4,7 @@ export const azuriteSpecimens: Specimen[] = [
   {
     id: "azur-001",
     name: "Azurite Crystal Cluster",
-    image: "/images/azurite-cluster.jpg",
+    image: "/images/specimens/azur-003.jpg",
     locality: "Tsumeb Mine, Otjikoto Region, Namibia",
     crystalSystem: "Monoclinic",
     dimensions: "8.5 × 4.2 × 3.8 cm",
@@ -20,7 +20,7 @@ export const azuriteSpecimens: Specimen[] = [
   {
     id: "azur-002",
     name: "Azurite Blueberry Nodules",
-    image: "/images/azurite-blueberry.jpg",
+    image: "/images/specimens/azur-004.jpg",
     locality: "Bisbee, Cochise County, Arizona, USA",
     crystalSystem: "Monoclinic",
     dimensions: "7.5 × 6.8 × 5.2 cm",

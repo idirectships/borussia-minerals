@@ -23,7 +23,7 @@ export const malachiteSpecimens: Specimen[] = [
   {
     id: "mala-001",
     name: "Fibrous Malachite",
-    image: "/images/malachite-fibrous.jpg",
+    image: "/images/specimens/mala-002.jpg",
     locality: "Kolwezi District, Lualaba Province, DR Congo",
     crystalSystem: "Monoclinic",
     dimensions: "9.8 × 6.2 × 4.5 cm",
