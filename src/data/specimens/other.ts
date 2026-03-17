@@ -1,23 +1,7 @@
 import type { Specimen } from "@/types";
 
-export const benitoiteSpecimens: Specimen[] = [
-  {
-    id: "beni-001",
-    name: "Benitoite on Natrolite",
-    image: "/images/benitoite-natrolite.jpg",
-    locality: "Benitoite Gem Mine, San Benito County, California, USA",
-    crystalSystem: "Hexagonal",
-    dimensions: "3.2 × 2.4 × 1.8 cm",
-    weight: "28g",
-    description:
-      "Rare blue benitoite crystals on a natrolite matrix. California's state gem, prized for its sapphire-blue color and exceptional fluorescence under UV light.",
-    price: 8500,
-    availability: "available",
-    mineralGroup: "Cyclosilicates",
-    luster: "Vitreous",
-    transparency: "Transparent",
-  },
-];
+// Benitoite sold — awaiting new inventory with Borussia Minerals cards
+export const benitoiteSpecimens: Specimen[] = [];
 
 export const malachiteSpecimens: Specimen[] = [
   {
