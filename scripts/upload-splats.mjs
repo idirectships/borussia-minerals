@@ -106,6 +106,7 @@ async function main() {
     const blob = await put(`borussia-splats/${file}`, readFileSync(filePath), {
       access: "public",
       contentType: "application/octet-stream",
+      allowOverwrite: true,
     });
     console.log(`✓`);
     results.push({ specimenId, url: blob.url });
