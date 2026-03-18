@@ -21,6 +21,7 @@ export const azuriteSpecimens: Specimen[] = [
     mineralGroup: "Carbonates",
     luster: "Vitreous to adamantine",
     transparency: "Translucent to opaque",
+    splatUrl: "https://fh3asutxdchzzmhw.public.blob.vercel-storage.com/borussia-splats/crystal-cropped-15k.ply",
   },
   {
     id: "azur-002",

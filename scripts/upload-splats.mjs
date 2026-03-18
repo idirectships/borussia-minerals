@@ -38,20 +38,21 @@ if (existsSync(envPath)) {
 const DRY_RUN = process.argv.includes("--dry-run");
 const LOCAL_DIR = process.env.LOCAL_SPLAT_DIR ?? "/tmp/borussia-splats";
 const GUS_HOST = "gus@100.109.154.84";
-const GUS_SPLAT_DIR = "/Users/gus/splat-projects";
+const GUS_BASE = "/Users/gus/splat-projects";
 
-// Map .ply filenames → specimen IDs
-const SPLAT_SPECIMEN_MAP = {
-  "crystal-cropped-15k.ply": "azur-001",
-  "crystal-cropped-20k.ply": "azur-002",
-  "cuprite-v2-colmap-30k.ply": "cupr-001",
-  "cuprite-v2-dust3r-60-15k.ply": "cupr-002",
-  "green-crystal-cropped-15k.ply": "chry-001",
+// Map local .ply filename → { specimenId, gusPath (relative to GUS_BASE) }
+const SPLAT_MAP = {
+  "crystal-cropped-15k.ply":      { specimenId: "azur-001", gusPath: "crystal-cropped/crystal-cropped-15k.ply" },
+  "crystal-cropped-20k.ply":      { specimenId: "azur-002", gusPath: "crystal-cropped/crystal-cropped-20k.ply" },
+  "cuprite-v2-colmap-30k.ply":    { specimenId: "cupr-001", gusPath: "cuprite-v2/cuprite-v2-colmap-30k.ply" },
+  "cuprite-v2-dust3r-60-15k.ply": { specimenId: "cupr-002", gusPath: "cuprite-v2-dust3r-60-15k.ply" },
+  "green-crystal-cropped-15k.ply":{ specimenId: "chry-001", gusPath: "green-crystal-cropped/green-crystal-cropped-15k.ply" },
 };
 
 async function pullFromGus(file, dst) {
+  const gusPath = SPLAT_MAP[file]?.gusPath ?? file;
   try {
-    execFileSync("scp", [`${GUS_HOST}:${GUS_SPLAT_DIR}/${file}`, dst]);
+    execFileSync("scp", [`${GUS_HOST}:${GUS_BASE}/${gusPath}`, dst]);
     return true;
   } catch {
     return false;
@@ -68,7 +69,7 @@ async function main() {
   if (!existsSync(LOCAL_DIR)) mkdirSync(LOCAL_DIR, { recursive: true });
 
   // Pull any missing files from GUS
-  for (const file of Object.keys(SPLAT_SPECIMEN_MAP)) {
+  for (const file of Object.keys(SPLAT_MAP)) {
     const dst = join(LOCAL_DIR, file);
     if (!existsSync(dst)) {
       process.stdout.write(`Pulling ${file} from GUS... `);
@@ -87,7 +88,7 @@ async function main() {
   const results = [];
 
   for (const file of ready) {
-    const specimenId = SPLAT_SPECIMEN_MAP[file];
+    const specimenId = SPLAT_MAP[file]?.specimenId;
     const filePath = join(LOCAL_DIR, file);
     const sizeMB = (readFileSync(filePath).length / 1024 / 1024).toFixed(1);
 
@@ -97,7 +98,7 @@ async function main() {
     }
 
     if (!specimenId) {
-      console.warn(`  SKIP ${file} — not in SPLAT_SPECIMEN_MAP`);
+      console.warn(`  SKIP ${file} — not in SPLAT_MAP`);
       continue;
     }
 
