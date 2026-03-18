@@ -41,7 +41,7 @@ const GUS_HOST = "gus@100.109.154.84";
 const GUS_SPLAT_DIR = "/Users/gus/splat-projects";
 
 // Map .ply filenames → specimen IDs
-const SPLAT_SPECIMEN_MAP: Record<string, string> = {
+const SPLAT_SPECIMEN_MAP = {
   "crystal-cropped-15k.ply": "azur-001",
   "crystal-cropped-20k.ply": "azur-002",
   "cuprite-v2-colmap-30k.ply": "cupr-001",
@@ -49,7 +49,7 @@ const SPLAT_SPECIMEN_MAP: Record<string, string> = {
   "green-crystal-cropped-15k.ply": "chry-001",
 };
 
-async function pullFromGus(file: string, dst: string) {
+async function pullFromGus(file, dst) {
   try {
     execFileSync("scp", [`${GUS_HOST}:${GUS_SPLAT_DIR}/${file}`, dst]);
     return true;
@@ -84,7 +84,7 @@ async function main() {
   }
 
   console.log(`\n${ready.length} file(s) ready:\n`);
-  const results: Array<{ specimenId: string; url: string }> = [];
+  const results = [];
 
   for (const file of ready) {
     const specimenId = SPLAT_SPECIMEN_MAP[file];
