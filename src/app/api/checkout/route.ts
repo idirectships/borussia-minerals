@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { fetchSpecimenById } from "@/lib/google-sheets";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 const PRICE_THRESHOLD = 5000;
 
 // Shipping rates for fragile, high-value mineral specimens
@@ -56,6 +54,7 @@ const SHIPPING_OPTIONS: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [
 ];
 
 export async function POST(request: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   try {
     const { items } = await request.json();
 
