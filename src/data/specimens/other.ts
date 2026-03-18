@@ -60,6 +60,7 @@ export const cupriteSpecimens: Specimen[] = [
     luster: "Adamantine to submetallic",
     transparency: "Translucent",
     provenance: "Ex. Valenzuela; Mark Hay collection, Phoenix, Arizona",
+    splatUrl: "https://fh3asutxdchzzmhw.public.blob.vercel-storage.com/borussia-splats/cuprite-v2-colmap-30k.ply",
   },
   {
     id: "cupr-002",
