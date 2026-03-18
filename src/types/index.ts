@@ -20,6 +20,7 @@ export interface Specimen {
   transparency?: string;
   provenance?: string;
   publishStatus?: "draft" | "review" | "published";
+  splatUrl?: string;
 }
 
 export interface Mine {
