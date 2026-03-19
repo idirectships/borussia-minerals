@@ -3,7 +3,12 @@ import Stripe from "stripe";
 import { markSpecimensAsSold } from "@/lib/google-sheets";
 
 export async function POST(request: NextRequest) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    console.error("[stripe-webhook] STRIPE_SECRET_KEY not configured");
+    return NextResponse.json({ error: "Not configured" }, { status: 503 });
+  }
+  const stripe = new Stripe(secretKey);
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
