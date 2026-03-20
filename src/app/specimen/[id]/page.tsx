@@ -4,9 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { SpecimenGallery } from "@/components/specimen-gallery";
-import { Button } from "@/components/ui/button";
+import { AddToCartButton } from "@/components/add-to-cart-button";
 import { fetchSpecimens, fetchSpecimenById } from "@/lib/google-sheets";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, isPurchasable } from "@/lib/utils";
 import JsonLd from "@/components/JsonLd";
 
 export const revalidate = 60;
@@ -55,6 +55,7 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
   }
 
   const priceText = formatPrice(specimen);
+  const canPurchase = isPurchasable(specimen);
 
   const additionalProperties = [
     specimen.locality && {
@@ -204,14 +205,12 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
                 </span>
               </div>
 
-              {/* Contact CTA */}
-              {specimen.availability === "available" && (
-                <Link href="/#contact">
-                  <Button variant="hero" size="lg" className="w-full">
-                    Inquire About This Specimen
-                  </Button>
-                </Link>
-              )}
+              {/* Purchase / Inquire CTA */}
+              <AddToCartButton
+                specimenId={specimen.id}
+                canPurchase={canPurchase}
+                availability={specimen.availability}
+              />
             </div>
           </div>
         </div>

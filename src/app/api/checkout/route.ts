@@ -54,7 +54,15 @@ const SHIPPING_OPTIONS: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [
 ];
 
 export async function POST(request: NextRequest) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    console.error("[checkout] STRIPE_SECRET_KEY not configured");
+    return NextResponse.json(
+      { error: "Checkout is not configured. Please contact us directly." },
+      { status: 503 }
+    );
+  }
+  const stripe = new Stripe(secretKey);
   try {
     const { items } = await request.json();
 

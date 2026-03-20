@@ -1,10 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { EventCard, type Event } from "@/components/event-card";
 import { Footer } from "@/components/footer";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Upcoming Events | Borussia Minerals",
   description:
     "Find Borussia Minerals at mineral shows, auctions, and exhibitions around the world.",
@@ -18,7 +19,7 @@ const upcomingEvents: Event[] = [
     location: "Gilbert, Arizona",
     venue: "Southeast Regional Library, 775 N. Greenfield Rd., Gilbert, AZ 85234",
     description:
-      "Arizona's premier mineral symposium featuring lectures on carbonates, mineral sales, and dealer exhibitions. Speakers include experts on Arizona calcites, rhodochrosite, and titanium minerals. Book signings by Wayne Thompson (Ikons).",
+      "Borussia Minerals will be exhibiting at this year's Minerals of Arizona Symposium. Come find us in person to view specimens and talk minerals.",
     type: "show",
     link: "https://flaggmineralfoundation.org/home/minerals-of-az-symposium/",
   },
