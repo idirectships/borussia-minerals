@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { SpecimenGallery } from "@/components/specimen-gallery";
+import { SpecimenSplatViewer } from "@/components/specimen-splat-viewer";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { fetchSpecimens, fetchSpecimenById } from "@/lib/google-sheets";
 import { formatPrice, isPurchasable } from "@/lib/utils";
@@ -132,19 +133,33 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
 
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Image / Gallery */}
-            <div className="relative">
-              <SpecimenGallery
-                images={specimen.images ?? [specimen.image]}
-                name={specimen.name}
-              />
-              {specimen.availability === "sold" && (
-                <div className="absolute top-4 right-4 bg-destructive/90 text-destructive-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded z-10">
-                  Sold
-                </div>
-              )}
-              {specimen.availability === "available" && (
-                <div className="absolute top-4 right-4 bg-primary/90 text-primary-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded z-10">
-                  Available
+            <div className="space-y-6">
+              <div className="relative">
+                <SpecimenGallery
+                  images={specimen.images ?? [specimen.image]}
+                  name={specimen.name}
+                />
+                {specimen.availability === "sold" && (
+                  <div className="absolute top-4 right-4 bg-destructive/90 text-destructive-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded z-10">
+                    Sold
+                  </div>
+                )}
+                {specimen.availability === "available" && (
+                  <div className="absolute top-4 right-4 bg-primary/90 text-primary-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded z-10">
+                    Available
+                  </div>
+                )}
+              </div>
+
+              {specimen.splatUrl && (
+                <div>
+                  <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground mb-3">
+                    3D View
+                  </p>
+                  <SpecimenSplatViewer
+                    splatUrl={specimen.splatUrl}
+                    initialCamera={specimen.splatCamera}
+                  />
                 </div>
               )}
             </div>

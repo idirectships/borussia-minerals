@@ -21,6 +21,10 @@ export interface Specimen {
   provenance?: string;
   publishStatus?: "draft" | "review" | "published";
   splatUrl?: string;
+  splatCamera?: {
+    position: [number, number, number];
+    lookAt: [number, number, number];
+  };
 }
 
 export interface Mine {
