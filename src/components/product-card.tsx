@@ -59,6 +59,11 @@ export function ProductCard({ specimen, className }: ProductCardProps) {
               Fat Jack
             </div>
           )}
+          {specimen.splatUrl && (
+            <div className="absolute bottom-3 right-3 bg-amber-500/90 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+              3D
+            </div>
+          )}
         </div>
 
         {/* Content */}

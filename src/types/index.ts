@@ -25,6 +25,10 @@ export interface Specimen {
     position: [number, number, number];
     lookAt: [number, number, number];
   };
+  hardness?: string;
+  sizeClass?: "TN" | "Min" | "SC" | "Cab";
+  narrative?: string;
+  tier?: "museum" | "collector" | "select" | "classic";
 }
 
 export interface Mine {

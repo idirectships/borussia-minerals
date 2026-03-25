@@ -72,10 +72,16 @@ export default {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "fade-out": {
+          "0%": { opacity: "1" },
+          "70%": { opacity: "1" },
+          "100%": { opacity: "0" },
+        },
       },
       animation: {
         shimmer: "shimmer 3s linear infinite",
         float: "float 6s ease-in-out infinite",
+        "fade-out": "fade-out 3s ease-out forwards",
       },
       boxShadow: {
         silver: "0 0 30px hsla(220, 15%, 75%, 0.2)",
