@@ -1,5 +1,6 @@
 # Borussia Minerals — Rare Arizona Mineral Specimens
 
+![CI](https://github.com/idirectships/borussia-minerals/actions/workflows/ci.yml/badge.svg)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/idirectships/borussia-minerals)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript)
