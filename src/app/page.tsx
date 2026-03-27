@@ -90,9 +90,9 @@ export default async function Home() {
                 className="relative aspect-[3/4] w-full max-w-md"
                 style={{
                   maskImage:
-                    "radial-gradient(ellipse 80% 80% at center, black 50%, transparent 100%)",
+                    "radial-gradient(ellipse 90% 95% at 50% 45%, black 60%, transparent 100%)",
                   WebkitMaskImage:
-                    "radial-gradient(ellipse 80% 80% at center, black 50%, transparent 100%)",
+                    "radial-gradient(ellipse 90% 95% at 50% 45%, black 60%, transparent 100%)",
                 }}
               >
                 <Image

@@ -4,10 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import { ShoppingCart, Check, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart-context";
+import type { Specimen } from "@/types";
 import { CONTACT_EMAIL } from "@/lib/data";
 
 interface StickyCTABarProps {
-  specimenId: string;
+  specimen: Specimen;
   specimenName: string;
   priceText: string;
   canPurchase: boolean;
@@ -17,7 +18,7 @@ interface StickyCTABarProps {
 }
 
 export function StickyCTABar({
-  specimenId,
+  specimen,
   specimenName,
   priceText,
   canPurchase,
@@ -26,7 +27,7 @@ export function StickyCTABar({
 }: StickyCTABarProps) {
   const [visible, setVisible] = useState(false);
   const { addItem, isInCart } = useCart();
-  const inCart = isInCart(specimenId);
+  const inCart = isInCart(specimen.id);
 
   useEffect(() => {
     const target = ctaRef.current;
@@ -75,7 +76,7 @@ export function StickyCTABar({
               variant={inCart ? "default" : "hero"}
               size="sm"
               disabled={inCart}
-              onClick={() => addItem(specimenId)}
+              onClick={() => addItem(specimen)}
               className="shrink-0"
             >
               {inCart ? (

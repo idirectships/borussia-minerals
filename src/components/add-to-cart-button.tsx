@@ -3,21 +3,22 @@
 import { ShoppingCart, Check, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart-context";
-import { type Specimen, CONTACT_EMAIL } from "@/lib/data";
+import type { Specimen } from "@/types";
+import { CONTACT_EMAIL } from "@/lib/data";
 
 interface AddToCartButtonProps {
-  specimenId: string;
+  specimen: Specimen;
   canPurchase: boolean;
   availability: Specimen["availability"];
 }
 
 export function AddToCartButton({
-  specimenId,
+  specimen,
   canPurchase,
   availability,
 }: AddToCartButtonProps) {
   const { addItem, isInCart } = useCart();
-  const inCart = isInCart(specimenId);
+  const inCart = isInCart(specimen.id);
 
   if (availability === "sold") {
     return (
@@ -60,7 +61,7 @@ export function AddToCartButton({
       variant="hero"
       size="lg"
       className="w-full"
-      onClick={() => addItem(specimenId)}
+      onClick={() => addItem(specimen)}
     >
       <ShoppingCart className="w-4 h-4" />
       Add to Cart
