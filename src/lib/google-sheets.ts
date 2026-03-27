@@ -46,7 +46,9 @@ interface SheetRow {
 }
 
 function rowToSpecimen(row: SheetRow): Specimen {
-  const price = row.price ? parseFloat(row.price) : undefined;
+  const price = row.price
+    ? parseFloat(row.price.replace(/[$,]/g, ""))
+    : undefined;
   const availability = (row.availability?.toLowerCase().replace(/ /g, "-") || "available") as
     | "available"
     | "sold"
