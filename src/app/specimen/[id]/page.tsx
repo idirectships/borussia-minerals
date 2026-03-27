@@ -5,7 +5,7 @@ import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { SpecimenGallery } from "@/components/specimen-gallery";
 import { SpecimenSplatViewer } from "@/components/specimen-splat-viewer";
-import { AddToCartButton } from "@/components/add-to-cart-button";
+import { SpecimenCTASection } from "@/components/specimen-cta-section";
 import { SpecimenPhotoStrip } from "@/components/specimen-photo-strip";
 import { TrustSignals } from "@/components/trust-signals";
 import { TierBadge, SplatBadge } from "@/components/tier-badge";
@@ -264,9 +264,11 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
                 )}
               </div>
 
-              {/* CTA */}
-              <AddToCartButton
+              {/* CTA + Mobile sticky bar */}
+              <SpecimenCTASection
                 specimen={specimen}
+                specimenName={specimen.name}
+                priceText={priceText}
                 canPurchase={canPurchase}
                 availability={specimen.availability}
               />
