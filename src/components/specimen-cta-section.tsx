@@ -6,7 +6,7 @@ import { StickyCTABar } from "@/components/sticky-cta-bar";
 import type { Specimen } from "@/types";
 
 interface SpecimenCTASectionProps {
-  specimenId: string;
+  specimen: Specimen;
   specimenName: string;
   priceText: string;
   canPurchase: boolean;
@@ -14,7 +14,7 @@ interface SpecimenCTASectionProps {
 }
 
 export function SpecimenCTASection({
-  specimenId,
+  specimen,
   specimenName,
   priceText,
   canPurchase,
@@ -27,7 +27,7 @@ export function SpecimenCTASection({
       {/* Main CTA — observed by IntersectionObserver */}
       <div ref={ctaRef}>
         <AddToCartButton
-          specimenId={specimenId}
+          specimen={specimen}
           canPurchase={canPurchase}
           availability={availability}
         />
@@ -35,7 +35,7 @@ export function SpecimenCTASection({
 
       {/* Mobile sticky bar — appears when main CTA scrolls out of view */}
       <StickyCTABar
-        specimenId={specimenId}
+        specimen={specimen}
         specimenName={specimenName}
         priceText={priceText}
         canPurchase={canPurchase}

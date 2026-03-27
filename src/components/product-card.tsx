@@ -22,7 +22,7 @@ export function ProductCard({ specimen, className }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(specimen.id);
+    addItem(specimen);
   };
 
   return (

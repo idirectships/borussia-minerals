@@ -9,7 +9,6 @@ import {
   type ReactNode,
 } from "react";
 import type { Specimen } from "@/types";
-import { getSpecimenById } from "@/data";
 import { isPurchasable } from "@/lib/utils";
 
 // Types
@@ -25,7 +24,7 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: "ADD_ITEM"; specimenId: string }
+  | { type: "ADD_ITEM"; specimen: Specimen }
   | { type: "REMOVE_ITEM"; specimenId: string }
   | { type: "CLEAR_CART" }
   | { type: "TOGGLE_CART" }
@@ -34,7 +33,7 @@ type CartAction =
   | { type: "HYDRATE"; items: CartItem[] };
 
 interface CartContextValue extends CartState {
-  addItem: (specimenId: string) => boolean;
+  addItem: (specimen: Specimen) => boolean;
   removeItem: (specimenId: string) => void;
   clearCart: () => void;
   toggleCart: () => void;
@@ -49,12 +48,12 @@ interface CartContextValue extends CartState {
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case "ADD_ITEM": {
-      const specimen = getSpecimenById(action.specimenId);
-      if (!specimen || !isPurchasable(specimen)) {
+      const { specimen } = action;
+      if (!isPurchasable(specimen)) {
         return state;
       }
       const existingItem = state.items.find(
-        (item) => item.specimenId === action.specimenId
+        (item) => item.specimenId === specimen.id
       );
       if (existingItem) {
         return state;
@@ -63,7 +62,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ...state,
         items: [
           ...state.items,
-          { specimenId: action.specimenId, specimen, quantity: 1 },
+          { specimenId: specimen.id, specimen, quantity: 1 },
         ],
       };
     }
@@ -121,17 +120,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const stored = localStorage.getItem(CART_STORAGE_KEY);
       if (stored) {
-        const specimenIds: string[] = JSON.parse(stored);
-        const items: CartItem[] = specimenIds
-          .map((id) => {
-            const specimen = getSpecimenById(id);
-            if (specimen && isPurchasable(specimen)) {
-              return { specimenId: id, specimen, quantity: 1 };
-            }
-            return null;
-          })
-          .filter(Boolean) as CartItem[];
-        dispatch({ type: "HYDRATE", items });
+        const parsed = JSON.parse(stored);
+        // Support both legacy (string[] of IDs) and new (CartItem[]) formats
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if (typeof parsed[0] === "string") {
+            // Legacy format — IDs only, can't reconstruct without static data. Clear stale cart.
+            localStorage.removeItem(CART_STORAGE_KEY);
+            return;
+          }
+          // New format — full CartItem objects
+          const items: CartItem[] = (parsed as CartItem[]).filter(
+            (item) => item.specimen && item.specimenId && isPurchasable(item.specimen)
+          );
+          dispatch({ type: "HYDRATE", items });
+        }
       }
     } catch {
       // Invalid storage
@@ -140,19 +142,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const specimenIds = state.items.map((item) => item.specimenId);
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(specimenIds));
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.items));
     } catch {
       // Quota exceeded
     }
   }, [state.items]);
 
-  const addItem = useCallback((specimenId: string): boolean => {
-    const specimen = getSpecimenById(specimenId);
-    if (!specimen || !isPurchasable(specimen)) {
+  const addItem = useCallback((specimen: Specimen): boolean => {
+    if (!isPurchasable(specimen)) {
       return false;
     }
-    dispatch({ type: "ADD_ITEM", specimenId });
+    dispatch({ type: "ADD_ITEM", specimen });
     dispatch({ type: "OPEN_CART" });
     return true;
   }, []);

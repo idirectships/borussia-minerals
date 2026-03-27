@@ -41,6 +41,8 @@ interface SheetRow {
   photoIds: string;
   notes: string;
   publishStatus: string;
+  tier: string;
+  narrative: string;
 }
 
 function rowToSpecimen(row: SheetRow): Specimen {
@@ -82,6 +84,8 @@ function rowToSpecimen(row: SheetRow): Specimen {
     availability,
     mineralGroup: row.mineral || undefined,
     publishStatus: (row.publishStatus || "published") as "draft" | "review" | "published",
+    tier: (row.tier?.toLowerCase() || undefined) as Specimen["tier"],
+    narrative: row.narrative || undefined,
   };
 }
 
@@ -99,7 +103,7 @@ export async function fetchAllSpecimens(): Promise<Specimen[]> {
     const sheetId = getSheetId();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
-      range: "Inventory!A2:M", // Skip header row (A-M, includes publish_status)
+      range: "Inventory!A2:O", // Skip header row (A-O, includes tier + narrative)
     });
 
     const rows = response.data.values;
@@ -122,6 +126,8 @@ export async function fetchAllSpecimens(): Promise<Specimen[]> {
         photoIds: row[10] || "",
         notes: row[11] || "",
         publishStatus: row[12] || "published",
+        tier: row[13] || "",
+        narrative: row[14] || "",
       }))
       .filter((row) => row.id && row.name) // Skip empty rows
       .map(rowToSpecimen);

@@ -252,7 +252,7 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
 
               {/* CTA */}
               <AddToCartButton
-                specimenId={specimen.id}
+                specimen={specimen}
                 canPurchase={canPurchase}
                 availability={specimen.availability}
               />
