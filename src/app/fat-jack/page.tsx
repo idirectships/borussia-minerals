@@ -1,13 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { MineHero } from "@/components/mine-hero";
 import { MineInfo } from "@/components/mine-info";
 import { Button } from "@/components/ui/button";
+import { TierBadge } from "@/components/tier-badge";
 import { getMineBySlug } from "@/lib/data";
 import { getPageCopy } from "@/lib/google-copy";
+import { fetchSpecimens } from "@/lib/google-sheets";
+import { formatPrice } from "@/lib/utils";
 
 export const revalidate = 60;
 
@@ -21,8 +25,18 @@ export const metadata = {
 };
 
 export default async function FatJackPage() {
-  const mine = getMineBySlug("fat-jack");
-  const copy = await getPageCopy("fat-jack");
+  const [mine, copy, allSpecimens] = await Promise.all([
+    Promise.resolve(getMineBySlug("fat-jack")),
+    getPageCopy("fat-jack"),
+    fetchSpecimens(),
+  ]);
+
+  // Fat Jack specimens: locality contains "Fat Jack" or mineSlug matches
+  const fatJackSpecimens = allSpecimens.filter(
+    (s) =>
+      s.locality?.toLowerCase().includes("fat jack") ||
+      s.mineSlug === "fat-jack"
+  );
 
   if (!mine) {
     notFound();
@@ -65,6 +79,68 @@ export default async function FatJackPage() {
           <MineInfo mine={mineWithCopy} />
         </div>
       </section>
+
+      {/* Specimens from Our Mine */}
+      {fatJackSpecimens.length > 0 && (
+        <section className="py-16 px-6 md:px-12 border-t border-border">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Specimens from Our Mine
+              </h2>
+              <Link
+                href="/shop"
+                className="text-xs uppercase tracking-[0.15em] text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1"
+              >
+                View All
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+              {fatJackSpecimens.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/specimen/${s.id}`}
+                  className="group block"
+                >
+                  <div className="silver-border matte-surface rounded-lg overflow-hidden transition-all duration-300 hover:shadow-silver">
+                    <div className="relative aspect-square bg-gradient-to-b from-secondary/30 to-transparent">
+                      <Image
+                        src={s.image}
+                        alt={s.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      {s.tier && (
+                        <div className="absolute top-3 left-3">
+                          <TierBadge tier={s.tier} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-display text-sm text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                        {s.name}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
+                        {s.locality}
+                      </p>
+                      <p className={`text-sm font-semibold mt-1 ${
+                        formatPrice(s) === "Price on Request"
+                          ? "text-muted-foreground"
+                          : "text-amber-500"
+                      }`}>
+                        {formatPrice(s)}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-16 px-6 md:px-12 border-t border-border">
