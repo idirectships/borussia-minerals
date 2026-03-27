@@ -12,7 +12,7 @@ export interface Specimen {
   featured?: boolean;
   price?: number;
   priceDisplay?: string;
-  availability: "available" | "sold" | "reserved";
+  availability: "available" | "sold" | "reserved" | "private-collection";
   mineSlug?: string;
   weight?: string;
   mineralGroup?: string;
@@ -29,10 +29,6 @@ export interface Specimen {
     position: [number, number, number];
     lookAt: [number, number, number];
   };
-  hardness?: string;
-  sizeClass?: "TN" | "Min" | "SC" | "Cab";
-  narrative?: string;
-  tier?: "museum" | "collector" | "select" | "classic";
 }
 
 export interface Mine {

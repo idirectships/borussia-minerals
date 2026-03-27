@@ -54,6 +54,11 @@ export function ProductCard({ specimen, className }: ProductCardProps) {
               Reserved
             </div>
           )}
+          {specimen.availability === "private-collection" && (
+            <div className="absolute top-3 right-3 bg-violet-600/90 text-white text-xs uppercase tracking-wider px-2 py-1 rounded">
+              Private Collection
+            </div>
+          )}
           {specimen.mineSlug === "fat-jack" && specimen.availability === "available" && (
             <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs uppercase tracking-wider px-2 py-1 rounded">
               Fat Jack

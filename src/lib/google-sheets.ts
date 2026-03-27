@@ -45,10 +45,11 @@ interface SheetRow {
 
 function rowToSpecimen(row: SheetRow): Specimen {
   const price = row.price ? parseFloat(row.price) : undefined;
-  const availability = (row.availability?.toLowerCase() || "available") as
+  const availability = (row.availability?.toLowerCase().replace(/ /g, "-") || "available") as
     | "available"
     | "sold"
-    | "reserved";
+    | "reserved"
+    | "private-collection";
 
   // Build image URL — check for Drive photo IDs, fall back to local specimen image
   const photoIds = row.photoIds

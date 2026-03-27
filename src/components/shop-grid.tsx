@@ -9,7 +9,7 @@ interface ShopGridProps {
 }
 
 export function ShopGrid({ specimens }: ShopGridProps) {
-  const [filter, setFilter] = useState<"all" | "available" | "sold">("all");
+  const [filter, setFilter] = useState<"all" | "available" | "sold" | "private-collection">("all");
 
   const filtered = specimens.filter((s) => {
     if (filter === "all") return true;
@@ -18,15 +18,17 @@ export function ShopGrid({ specimens }: ShopGridProps) {
 
   const availableCount = specimens.filter((s) => s.availability === "available").length;
   const soldCount = specimens.filter((s) => s.availability === "sold").length;
+  const privateCount = specimens.filter((s) => s.availability === "private-collection").length;
 
   return (
     <div>
       {/* Filter tabs */}
-      <div className="flex justify-center gap-4 mb-12">
+      <div className="flex flex-wrap justify-center gap-4 mb-12">
         {[
           { key: "all" as const, label: `All (${specimens.length})` },
-          { key: "available" as const, label: `Available (${availableCount})` },
+          { key: "available" as const, label: `For Sale (${availableCount})` },
           { key: "sold" as const, label: `Sold (${soldCount})` },
+          ...(privateCount > 0 ? [{ key: "private-collection" as const, label: `Private Collection (${privateCount})` }] : []),
         ].map((tab) => (
           <button
             key={tab.key}

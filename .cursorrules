@@ -1,0 +1,371 @@
+# Borussia Minerals — Cursor Rules
+
+E-commerce site for museum-quality Arizona mineral specimens with interactive 3D Gaussian splat viewers.
+
+**Repo:** github.com/idirectships/borussia-minerals (PUBLIC)
+**Live:** borussiaminerals.com (Vercel)
+**Owner:** Drew (Dru) Garman — GitHub: idirectships
+
+---
+
+## Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5.7 |
+| Styling | Tailwind CSS 3.4 |
+| Package Manager | Bun |
+| 3D Viewer | `@mkkellogg/gaussian-splats-3d` v0.4.7 |
+| Payments | Stripe (Checkout + Webhooks) |
+| Inventory API | Google Sheets API v4 |
+| File Storage | Vercel Blob (`.ksplat` splat files) |
+| Deployment | Vercel (auto-deploy on push to master) |
+| Testing | Playwright |
+| Fonts | Cormorant Garamond (display) + Montserrat (body) |
+
+**Node:** 20+ | **Build:** `bun dev`, `bun build`, `bun run lint`, `bun test`
+
+---
+
+## Project Structure
+
+```
+src/
+  app/                              # Next.js App Router
+    api/checkout/route.ts           # Stripe session creation
+    api/webhooks/stripe/route.ts    # Stripe webhook handler
+    api/revalidate/route.ts         # ISR revalidation trigger
+    shop/                           # Shop listing page
+    specimen/[id]/                  # Specimen detail + 3D viewer
+    localities/                     # Mine locality index + SVG map
+    fat-jack/                       # Fat Jack Mine dedicated page
+    checkout/                       # Checkout success/cancel
+    events/                         # Events calendar
+    layout.tsx                      # Root layout (fonts, providers)
+    page.tsx                        # Homepage hero + featured
+    sitemap.ts                      # Dynamic sitemap
+    robots.ts                       # Robots.txt
+
+  components/                       # 21 React components
+    specimen-splat-viewer.tsx       # 3D Gaussian splat viewer (auto-rotate, presets)
+    product-card.tsx                # Specimen card with image + price
+    shop-grid.tsx                   # Grid layout for shop
+    shop-filters.tsx                # Filter by mineral, mine, price
+    az-mine-map.tsx                 # SVG interactive map (4 localities)
+    cart-drawer.tsx                 # Slide-out cart + checkout
+    specimen-gallery.tsx            # Multi-image carousel
+    specimen-photo-strip.tsx        # Photo thumbnails
+    navigation.tsx                  # Top nav
+    footer.tsx                      # Footer
+    JsonLd.tsx                      # Structured data (JSON-LD)
+    trust-signals.tsx               # Social proof badges
+    ui/                             # Primitive UI components
+
+  data/
+    specimens/                      # Specimen data files
+      azurite.ts                    # 4 azurite specimens
+      wulfenite.ts                  # 2 wulfenite specimens
+      fluorite.ts                   # Fluorite specimens
+      other.ts                      # Cuprite, malachite, chrysocolla
+      index.ts                      # Barrel export
+    mines/
+      fat-jack.ts                   # Fat Jack Mine narrative
+      index.ts
+    localities.ts                   # 4 mine localities with coordinates
+    index.ts                        # Data aggregation
+
+  lib/
+    google-sheets.ts                # Sheets API: fetch/write specimens
+    google-drive.ts                 # Drive image URL resolution
+    data.ts                         # Data helpers (getSpecimen, etc.)
+    utils.ts                        # Shared utilities
+
+  hooks/
+    use-cart.tsx                     # Cart state management
+    cart-context.tsx                 # React context provider
+
+  config/
+    constants.ts                    # Site name, tagline, contact, price threshold
+
+  types/
+    index.ts                        # Domain types (Specimen, Mine, CartItem, etc.)
+    gaussian-splats-3d.d.ts         # Type defs for splat viewer library
+
+public/
+  images/specimens/                 # Per-specimen photography
+  llms.txt                          # LLM-readable site summary
+  llms-full.txt                     # Extended LLM context
+
+scripts/
+  upload-splats.mjs                 # Convert PLY -> KSPLAT, upload to Vercel Blob
+  google-apps-script.js             # Apps Script webhook -> /api/revalidate
+  drive-watch.py                    # Watch Google Drive for new specimen images
+  quest3-frames.sh                  # Quest 3 frame extraction
+```
+
+---
+
+## Data Models
+
+### Specimen
+```typescript
+interface Specimen {
+  id: string                          // "azur-001", "cupr-001"
+  name: string                        // "Azurite with Selenite"
+  image: string                       // Hero photo path or Drive URL
+  images?: string[]                   // Multi-image gallery (Drive URLs)
+  locality: string                    // "Morenci Mine, Greenlee County, Arizona, USA"
+  crystalSystem: string               // "Monoclinic", "Cubic"
+  dimensions: string                  // "8.5 x 4.2 x 3.8 cm"
+  weight?: string                     // "320g"
+  description: string                 // Full narrative
+  price?: number                      // USD cents (85000 = $850)
+  availability: "available" | "sold" | "reserved"
+  mineralGroup?: string               // "Carbonates", "Oxides"
+  luster?: string                     // "Vitreous to adamantine"
+  transparency?: string               // "Translucent to opaque"
+  featured?: boolean                  // Homepage feature
+  splatUrl?: string                   // Vercel Blob KSPLAT URL
+  splatCamera?: { position: [number, number, number]; lookAt: [number, number, number] }
+  hardness?: string                   // Mohs hardness
+  sizeClass?: "TN" | "Min" | "SC" | "Cab"
+  tier?: "museum" | "collector" | "select" | "classic"
+  publishStatus?: "draft" | "review" | "published"
+}
+```
+
+### Mine
+```typescript
+interface Mine {
+  slug: string                        // "fat-jack"
+  name: string                        // "Fat Jack Mine"
+  location: string
+  shortDescription: string
+  history: string                     // Full narrative
+  geology: string                     // Geological details
+  heroImage?: string
+  established?: string
+  minerals?: string[]
+}
+```
+
+### MineLocality (Map Pins)
+```typescript
+interface MineLocality {
+  id: string                          // "morenci"
+  name: string                        // "Morenci Mine"
+  shortName: string                   // "Morenci"
+  county: string                      // "Greenlee County"
+  state: string                       // "Arizona"
+  lat: number; lon: number
+  description: string
+  specimenIds: string[]
+  minerals: string[]
+}
+```
+
+### Current Localities (4)
+1. Morenci Mine — Greenlee County (33.07, -109.37)
+2. New Cornelia/Ajo — Pima County (32.37, -112.86)
+3. Bagdad — Yavapai County (34.58, -113.15)
+4. Ray/Pearl Handle Pit — Pinal County (33.15, -110.97)
+
+---
+
+## Gaussian Splat Viewer
+
+### Component: `src/components/specimen-splat-viewer.tsx` (~320 lines)
+
+Library: `@mkkellogg/gaussian-splats-3d` v0.4.7
+
+**Features:**
+- Auto-rotate (0.5 RPM, stops on user interaction)
+- Camera presets: Front, Side, Top, 3/4 view
+- Interactive drag-to-rotate + wheel-to-zoom
+- Share button (copy URL or native share)
+- Loading state with fallback image
+- Responsive 4:3 aspect ratio
+
+**Props:**
+```typescript
+interface SpecimenSplatViewerProps {
+  splatUrl: string                    // KSPLAT file URL
+  initialCamera?: SplatCamera         // Custom starting viewpoint
+  presets?: CameraPreset[]            // Custom preset buttons
+  fallbackImage?: string              // Fallback JPG during load
+  className?: string
+}
+```
+
+**Default camera presets:**
+```typescript
+[
+  { label: "Front", position: [0, 0, 3], lookAt: [0, 0, 0] },
+  { label: "Side", position: [3, 0, 0], lookAt: [0, 0, 0] },
+  { label: "Top", position: [0, 3, 0.1], lookAt: [0, 0, 0] },
+  { label: "3/4", position: [2, 1.5, 2], lookAt: [0, 0, 0] },
+]
+```
+
+**File format:** KSPLAT (binary compressed Gaussian Splat)
+**CDN:** `fh3asutxdchzzmhw.public.blob.vercel-storage.com/borussia-splats/`
+
+---
+
+## Gaussian Splatting Pipeline (Outside Repo)
+
+### Overview
+Photographs -> COLMAP SfM -> OpenSplat training -> PLY -> KSPLAT -> Vercel Blob
+
+### Capture Protocol (LOCKED)
+- Turntable + iPhone on tripod
+- 3 heights (15deg, 45deg, 70deg) x 12 positions (30deg increments) = 36 shots
+- Black velvet background (eliminates COLMAP confusion)
+- AE/AF locked, ProRAW optional
+- Quality gate: COLMAP exhaustive matcher on-site; >=80% registration = proceed
+
+### Pipeline Directories
+```
+~/splat-projects/
+  specimens/{id}/                   # Per-specimen data
+    capture/                        # Original photos/video
+    colmap_ws/                      # COLMAP workspace
+    runs/
+      {date}-{iters}-{node}/        # Training runs
+        output.ply                  # Final model
+        opensplat.log               # Training log
+        params.json                 # Flags, node, date
+        scores.json                 # Grade, quality metrics
+        renders/                    # Validation renders
+  tools/                            # Pipeline scripts (30+)
+    run-colmap.sh                   # COLMAP launcher
+    run-splat.sh                    # OpenSplat launcher (canonical)
+    score-splat.py                  # Quality grading (A/B/C/D/F)
+    deploy-splat.sh                 # PLY -> Vercel Blob (Director-gated)
+    preflight.sh                    # Pre-training checks
+    assess-images.py                # Image quality auditor
+    make-colmap-masks.py            # Background removal masks
+  completed-plys/                   # Archive (~2.5GB, 20 files)
+```
+
+### SfM Methods
+- **COLMAP** (primary): SIFT features, exhaustive matcher <=60 imgs, sequential >60
+- **DUSt3R** (experimental): Transformer-based depth, metric scale recovery
+- **MASt3R** (planned): Asymmetric stereo transformer, 2.4x faster
+
+### Training Tiers
+| Tier | Iters | Time (MacBook) | PLY size | Use case |
+|------|-------|----------------|----------|----------|
+| Preview | 7k | ~45 min | 30-90MB | Quick check |
+| Standard | 15k | ~2 hr | 80-160MB | Customer delivery |
+| Premium | 30k | ~4 hr | 150-400MB | Hero specimens |
+
+### Hardware Nodes
+| Node | Machine | RAM | Status | Notes |
+|------|---------|-----|--------|-------|
+| Mama | Mac Studio M1 | 32GB | Active | MPS crashes on dense clouds |
+| MacBook | M4 Max | 36GB | Active | Primary development |
+| GUS | M4 Mini | 24GB | Active | Overflow only |
+
+**Routing:** Mama -> MacBook -> GUS (never default to GUS)
+
+### Current Specimens
+| ID | Mineral | Grade | Status |
+|---|---|---|---|
+| cupr-001 | Cuprite on Copper | A (89) | LIVE ($3,200) |
+| azur-001 | Azurite | D | Review pending |
+| chry-001 | Chrysocolla | F | SKIP (specular) |
+| amet-001 | Amethyst | C (61) | RESHOOT |
+| boris-001 to 012 | TBD | — | Gem show (scheduled) |
+
+### Key Rules
+- COLMAP runs on raw `images_jpg/` ONLY — never rembg/processed
+- Always use `run-splat.sh` — never call opensplat directly
+- Never hardcode opensplat path (use detection loop)
+- `--cpu` fallback = 14hr vs 1.5hr. Fail loud on MPS crash, never silently degrade
+- Each run gets a unique dated directory — no overwrites
+- `opensplat.log` MUST be co-located with output.ply (required for scoring)
+
+### PLY Deployment
+```bash
+# Manual only (Director-gated):
+SPECIMEN_ID=cupr-001 deploy-splat.sh ~/path/to/output.ply
+# Uploads to Vercel Blob, updates splatUrl in specimen data, git pushes
+```
+
+### Upload Script
+`scripts/upload-splats.mjs` converts PLY -> KSPLAT and uploads to Vercel Blob storage.
+
+---
+
+## API Routes
+
+### POST /api/checkout
+Creates Stripe Checkout session. Validates availability, price threshold ($5K+), specimen existence.
+Shipping: Domestic Standard ($45), Priority ($75), International ($125), Local Pickup (free).
+
+### POST /api/webhooks/stripe
+Handles `checkout.session.completed` (marks sold in Sheet), `payment_intent.payment_failed`.
+
+### POST /api/revalidate
+ISR revalidation trigger. Requires `x-revalidate-secret` header. Called by Google Apps Script on sheet edit.
+
+---
+
+## Google Sheets Integration
+
+**Sheet columns:** ID, Name, Mineral, Locality, CrystalSystem, Dimensions, Weight, Price, Availability, Description, PhotoIds, Notes, PublishStatus
+
+**Key functions in `src/lib/google-sheets.ts`:**
+- `fetchAllSpecimens()` — All specimens (cached)
+- `fetchSpecimens()` — Published only
+- `fetchSpecimenById(id)` — Single specimen
+- `markSpecimensAsSold(ids)` — Patch availability on purchase
+
+**Images:** Google Drive `https://lh3.googleusercontent.com/d/{fileId}` or local `/images/specimens/{id}.jpg`
+
+---
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| GOOGLE_SERVICE_ACCOUNT_KEY | Yes | Full JSON service account (stringified) |
+| GOOGLE_SHEET_ID | Yes | Sheet ID from URL |
+| REVALIDATE_SECRET | Yes | Shared secret for ISR webhook |
+| STRIPE_SECRET_KEY | Checkout | sk_test_ or sk_live_ |
+| STRIPE_PUBLISHABLE_KEY | Checkout | pk_test_ or pk_live_ |
+| STRIPE_WEBHOOK_SECRET | Webhooks | whsec_ from Stripe |
+
+---
+
+## Style Guide
+
+- **Fonts:** Cormorant Garamond (headings/display), Montserrat (body)
+- **Palette:** Silver/platinum accent, amber crystal highlights, dark backgrounds
+- **Animations:** shimmer, float, fade-out (defined in tailwind.config.ts)
+- **Design:** Museum/gallery aesthetic. Clean, professional, not flashy
+- **Map:** Pure SVG + React useState for mine localities (no Leaflet/Mapbox)
+
+---
+
+## Non-Negotiable Rules
+
+1. **Stripe isolation** — Borussia Stripe keys NEVER appear in other projects
+2. **Client data isolation** — Customer PII stays in Borussia handlers only
+3. **File vs directory collision** — Before creating `src/data/foo.ts`, check if `src/data/foo/` exists
+4. **Content edits** — Edit `src/data/` files. Don't touch `src/app/`, `src/components/`, `src/lib/` for content changes
+5. **Splat pipeline** — Raw images only for COLMAP. Always use run-splat.sh
+6. **No TODO comments** — Complete the work or don't start it
+
+---
+
+## Current Work (2026-03-26)
+
+- PRs #19 + #20 OPEN on `feat/classic-store-view` — splat viewer wiring + classic store view
+- cupr-001 is LIVE with 3D viewer
+- Boris gem show session targeting 2026-03-27 — 8-12 new specimens
+- RunPod batch training script pending for gem show volume
+
+Updated: 2026-03-26
