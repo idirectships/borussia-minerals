@@ -155,7 +155,7 @@ export default async function Home() {
                       <p className={`text-sm font-semibold mt-1 ${
                         formatPrice(s) === "Price on Request"
                           ? "text-muted-foreground"
-                          : "text-accent"
+                          : "text-amber-500"
                       }`}>
                         {formatPrice(s)}
                       </p>

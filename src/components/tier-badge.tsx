@@ -1,58 +1,37 @@
 import { cn } from "@/lib/utils";
 
-type Tier = "museum" | "collector" | "select" | "classic";
+const tierStyles = {
+  museum: "bg-amber-900/80 text-amber-300",
+  collector: "bg-blue-900/60 text-blue-400",
+  select: "bg-green-900/60 text-green-400",
+  classic: "bg-zinc-700/60 text-zinc-400",
+} as const;
 
-const tierConfig: Record<Tier, { label: string; className: string }> = {
-  museum: {
-    label: "Museum Grade",
-    className: "bg-amber-900/60 text-amber-300 border-amber-700/40",
-  },
-  collector: {
-    label: "Collector",
-    className: "bg-blue-900/40 text-blue-300 border-blue-700/40",
-  },
-  select: {
-    label: "Select",
-    className: "bg-emerald-900/40 text-emerald-300 border-emerald-700/40",
-  },
-  classic: {
-    label: "Classic",
-    className: "bg-secondary text-muted-foreground border-border",
-  },
-};
+type Tier = keyof typeof tierStyles;
 
-interface TierBadgeProps {
-  tier: Tier;
-  className?: string;
-}
+export function TierBadge({ tier }: { tier: string | undefined }) {
+  if (!tier || !(tier in tierStyles)) return null;
 
-export function TierBadge({ tier, className }: TierBadgeProps) {
-  const config = tierConfig[tier];
+  const label =
+    tier === "museum"
+      ? "Museum Grade"
+      : tier.charAt(0).toUpperCase() + tier.slice(1);
+
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border",
-        config.className,
-        className
+        "inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider",
+        tierStyles[tier as Tier]
       )}
     >
-      {config.label}
+      {label}
     </span>
   );
 }
 
-interface SplatBadgeProps {
-  className?: string;
-}
-
-export function SplatBadge({ className }: SplatBadgeProps) {
+export function SplatBadge() {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border bg-violet-900/30 text-violet-300 border-violet-700/40",
-        className
-      )}
-    >
+    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-violet-500/20 text-violet-400 border border-violet-500/40">
       3D
     </span>
   );

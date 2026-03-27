@@ -8,6 +8,7 @@ import { SpecimenSplatViewer } from "@/components/specimen-splat-viewer";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { SpecimenPhotoStrip } from "@/components/specimen-photo-strip";
 import { TrustSignals } from "@/components/trust-signals";
+import { TierBadge, SplatBadge } from "@/components/tier-badge";
 import { fetchSpecimens, fetchSpecimenById } from "@/lib/google-sheets";
 import { formatPrice, isPurchasable } from "@/lib/utils";
 import JsonLd from "@/components/JsonLd";
@@ -196,6 +197,14 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
 
             {/* Right column: details panel */}
             <div className="space-y-6 lg:sticky lg:top-32 lg:self-start">
+              {/* Tier + 3D badges */}
+              {(specimen.tier || hasSplat) && (
+                <div className="flex gap-2">
+                  <TierBadge tier={specimen.tier} />
+                  {hasSplat && <SplatBadge />}
+                </div>
+              )}
+
               {/* Mineral group micro-label + name */}
               <div className="space-y-3">
                 <span className="text-xs uppercase tracking-[0.25em] text-amber-500 font-medium">
@@ -237,17 +246,22 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
                 </div>
               )}
 
-              {/* Price */}
+              {/* Price + shipping */}
               <div className="pt-2">
                 <span
                   className={`font-display text-3xl ${
                     specimen.availability === "sold"
                       ? "text-muted-foreground line-through"
-                      : "text-primary"
+                      : "text-amber-500"
                   }`}
                 >
                   {priceText}
                 </span>
+                {specimen.availability !== "sold" && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Shipping from $45 · Insured delivery
+                  </p>
+                )}
               </div>
 
               {/* CTA */}

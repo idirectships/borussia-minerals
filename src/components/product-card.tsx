@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TierBadge } from "@/components/tier-badge";
 import { type Specimen, formatPrice, isPurchasable } from "@/lib/data";
 import { useCart } from "@/lib/cart-context";
 import { cn } from "@/lib/utils";
@@ -59,7 +60,12 @@ export function ProductCard({ specimen, className }: ProductCardProps) {
               Private Collection
             </div>
           )}
-          {specimen.mineSlug === "fat-jack" && specimen.availability === "available" && (
+          {specimen.tier && (
+            <div className="absolute top-3 left-3">
+              <TierBadge tier={specimen.tier} />
+            </div>
+          )}
+          {!specimen.tier && specimen.mineSlug === "fat-jack" && specimen.availability === "available" && (
             <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs uppercase tracking-wider px-2 py-1 rounded">
               Fat Jack
             </div>
@@ -98,8 +104,8 @@ export function ProductCard({ specimen, className }: ProductCardProps) {
                 specimen.availability === "sold"
                   ? "text-muted-foreground line-through"
                   : priceText === "Price on Request"
-                    ? "text-accent"
-                    : "text-primary"
+                    ? "text-muted-foreground"
+                    : "text-amber-500"
               )}
             >
               {priceText}
