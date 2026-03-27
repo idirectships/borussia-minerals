@@ -4,6 +4,7 @@ import { Instagram, ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
+import { HeroCarousel } from "@/components/hero-carousel";
 import JsonLd from "@/components/JsonLd";
 import { CONTACT_EMAIL, INSTAGRAM_HANDLE } from "@/lib/data";
 import { getPageCopy } from "@/lib/google-copy";
@@ -28,6 +29,24 @@ export default async function Home() {
   const featured = specimens
     .filter((s) => s.availability === "available")
     .slice(0, 4);
+
+  // Hero carousel: wulfenite hero first, then featured specimens (dedup wulfenite)
+  const heroSlides = [
+    {
+      id: "wulfenite-hero",
+      name: "Wulfenite on Matrix",
+      locality: "Fat Jack Mine, Arizona",
+      image: "/images/wulfenite-hero.jpg",
+    },
+    ...featured
+      .filter((s) => !s.id.startsWith("wulf-"))
+      .map((s) => ({
+        id: s.id,
+        name: s.name,
+        locality: s.locality,
+        image: s.image,
+      })),
+  ];
 
   const orgJsonLd = {
     "@context": "https://schema.org",
@@ -84,26 +103,9 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Hero Image */}
+            {/* Hero Image — Carousel */}
             <div className="flex justify-center lg:justify-end order-1 lg:order-2">
-              <div
-                className="relative aspect-[3/4] w-full max-w-md"
-                style={{
-                  maskImage:
-                    "radial-gradient(ellipse 90% 95% at 50% 45%, black 60%, transparent 100%)",
-                  WebkitMaskImage:
-                    "radial-gradient(ellipse 90% 95% at 50% 45%, black 60%, transparent 100%)",
-                }}
-              >
-                <Image
-                  src="/images/wulfenite-hero.jpg"
-                  alt="Wulfenite on Matrix - Borussia Minerals signature specimen"
-                  fill
-                  priority
-                  className="object-contain"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 448px"
-                />
-              </div>
+              <HeroCarousel slides={heroSlides} />
             </div>
           </div>
         </div>
