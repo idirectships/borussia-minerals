@@ -20,6 +20,10 @@ export interface Specimen {
   transparency?: string;
   provenance?: string;
   publishStatus?: "draft" | "review" | "published";
+  hardness?: string;
+  sizeClass?: "TN" | "Min" | "SC" | "Cab";
+  narrative?: string;
+  tier?: "museum" | "collector" | "select" | "classic";
   splatUrl?: string;
 }
 

@@ -8,7 +8,7 @@ export function formatPrice(specimen: Specimen): string {
   if (specimen.priceDisplay) {
     return specimen.priceDisplay;
   }
-  if (specimen.price === undefined || specimen.price >= PRICE_THRESHOLD) {
+  if (specimen.price === undefined) {
     return "Price on Request";
   }
   return `$${specimen.price.toLocaleString()}`;

@@ -49,15 +49,12 @@ export default async function ShopPage() {
         <Navigation />
 
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              {copy.shop_label || "Collection"}
-            </span>
-            <h1 className="font-display text-4xl md:text-5xl text-silver-gradient animate-shimmer mt-4 mb-6">
-              {copy.shop_heading || "Available Specimens"}
+          <div className="mb-8">
+            <h1 className="font-display text-3xl md:text-4xl text-foreground">
+              {copy.shop_heading || "Collection"}
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              {copy.shop_intro || "Browse our current inventory of mineral specimens. Each piece has been hand-selected for quality and character."}
+            <p className="text-muted-foreground text-sm mt-2">
+              {copy.shop_intro || "Hand-selected mineral specimens from Arizona mines."}
             </p>
           </div>
 

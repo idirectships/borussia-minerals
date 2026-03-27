@@ -4,7 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { SpecimenGallery } from "@/components/specimen-gallery";
-import { AddToCartButton } from "@/components/add-to-cart-button";
+import { SpecimenCTASection } from "@/components/specimen-cta-section";
+import { TierBadge, SplatBadge } from "@/components/tier-badge";
+import { TrustSignals } from "@/components/trust-signals";
 import { fetchSpecimens, fetchSpecimenById } from "@/lib/google-sheets";
 import { formatPrice, isPurchasable } from "@/lib/utils";
 import JsonLd from "@/components/JsonLd";
@@ -28,9 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title,
     description,
-    alternates: {
-      canonical: canonicalUrl,
-    },
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title,
       description,
@@ -38,17 +38,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       siteName: "Borussia Minerals",
       type: "website",
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
 export default async function SpecimenPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const specimen = await fetchSpecimenById(id);
+  const [specimen, allSpecimens] = await Promise.all([
+    fetchSpecimenById(id),
+    fetchSpecimens(),
+  ]);
 
   if (!specimen) {
     notFound();
@@ -56,34 +55,36 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
 
   const priceText = formatPrice(specimen);
   const canPurchase = isPurchasable(specimen);
+  const isFromOwnMine = specimen.mineSlug === "fat-jack";
 
-  const additionalProperties = [
-    specimen.locality && {
-      "@type": "PropertyValue",
-      name: "Locality",
-      value: specimen.locality,
-    },
-    specimen.crystalSystem && {
-      "@type": "PropertyValue",
-      name: "Crystal System",
-      value: specimen.crystalSystem,
-    },
-    specimen.dimensions && {
-      "@type": "PropertyValue",
-      name: "Dimensions",
-      value: specimen.dimensions,
-    },
-    specimen.weight && {
-      "@type": "PropertyValue",
-      name: "Weight",
-      value: specimen.weight,
-    },
-    specimen.luster && {
-      "@type": "PropertyValue",
-      name: "Luster",
-      value: specimen.luster,
-    },
-  ].filter(Boolean);
+  // Related specimens: same mineral group or same locality, excluding current
+  const related = allSpecimens
+    .filter(
+      (s) =>
+        s.id !== specimen.id &&
+        (s.mineralGroup === specimen.mineralGroup ||
+          s.locality === specimen.locality)
+    )
+    .slice(0, 4);
+
+  // Spec rows — show all available data
+  const specs = [
+    specimen.locality && { label: "Locality", value: specimen.locality },
+    specimen.dimensions && { label: "Dimensions", value: specimen.dimensions },
+    specimen.weight && { label: "Weight", value: specimen.weight },
+    specimen.crystalSystem && { label: "Crystal System", value: specimen.crystalSystem },
+    specimen.hardness && { label: "Hardness", value: specimen.hardness },
+    specimen.luster && { label: "Luster", value: specimen.luster },
+    specimen.transparency && { label: "Transparency", value: specimen.transparency },
+    specimen.sizeClass && { label: "Size Class", value: specimen.sizeClass },
+    specimen.provenance && { label: "Provenance", value: specimen.provenance },
+  ].filter(Boolean) as { label: string; value: string }[];
+
+  const additionalProperties = specs.map((s) => ({
+    "@type": "PropertyValue" as const,
+    name: s.label,
+    value: s.value,
+  }));
 
   return (
     <main className="min-h-screen">
@@ -114,24 +115,20 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
         }}
       />
 
-      <section className="relative pt-32 pb-16 px-6 md:px-12">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        </div>
-
+      <section className="relative pt-28 pb-16 px-6 md:px-12">
         <Navigation />
 
         <div className="max-w-7xl mx-auto">
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Shop
+            Back to Collection
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Image / Gallery */}
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Left: Gallery */}
             <div className="relative">
               <SpecimenGallery
                 images={specimen.images ?? [specimen.image]}
@@ -142,77 +139,133 @@ export default async function SpecimenPage({ params }: { params: Promise<{ id: s
                   Sold
                 </div>
               )}
-              {specimen.availability === "available" && (
-                <div className="absolute top-4 right-4 bg-primary/90 text-primary-foreground text-xs uppercase tracking-wider px-3 py-1.5 rounded z-10">
-                  Available
-                </div>
-              )}
             </div>
 
-            {/* Details */}
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <span className="text-xs uppercase tracking-[0.2em] text-accent">
+            {/* Right: Details */}
+            <div className="space-y-6">
+              {/* Badges */}
+              <div className="flex flex-wrap gap-2">
+                {specimen.tier && <TierBadge tier={specimen.tier} />}
+                {specimen.splatUrl && <SplatBadge />}
+                {specimen.availability === "available" && !specimen.tier && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border bg-primary/10 text-primary border-primary/20">
+                    Available
+                  </span>
+                )}
+              </div>
+
+              {/* Mineral type + Name */}
+              <div className="space-y-2">
+                <span className="text-[11px] uppercase tracking-[0.2em] text-accent font-medium">
                   {specimen.mineralGroup || "Mineral Specimen"}
                 </span>
-                <h1 className="font-display text-4xl md:text-5xl text-foreground">
+                <h1 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground">
                   {specimen.name}
                 </h1>
               </div>
 
+              {/* Description */}
               {specimen.description && (
-                <p className="text-muted-foreground text-lg leading-relaxed">
+                <p className="text-muted-foreground text-base leading-relaxed">
                   {specimen.description}
                 </p>
               )}
 
-              {/* Specs */}
-              <div className="space-y-3 py-6 border-t border-b border-border">
-                {specimen.locality && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Locality</span>
-                    <span className="text-foreground">{specimen.locality}</span>
-                  </div>
-                )}
-                {specimen.crystalSystem && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Crystal System</span>
-                    <span className="text-foreground">{specimen.crystalSystem}</span>
-                  </div>
-                )}
-                {specimen.dimensions && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Dimensions</span>
-                    <span className="text-foreground">{specimen.dimensions}</span>
-                  </div>
-                )}
-                {specimen.weight && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Weight</span>
-                    <span className="text-foreground">{specimen.weight}</span>
-                  </div>
-                )}
-              </div>
+              {/* Narrative (if exists) */}
+              {specimen.narrative && (
+                <p className="text-muted-foreground/80 text-sm leading-relaxed italic">
+                  {specimen.narrative}
+                </p>
+              )}
 
               {/* Price */}
-              <div className="flex items-center justify-between">
-                <span className={`font-display text-3xl ${
-                  specimen.availability === "sold"
-                    ? "text-muted-foreground line-through"
-                    : "text-primary"
-                }`}>
+              <div className="pt-2">
+                <span
+                  className={`text-2xl md:text-3xl font-semibold font-body ${
+                    specimen.availability === "sold"
+                      ? "text-muted-foreground line-through"
+                      : priceText === "Price on Request"
+                        ? "text-foreground"
+                        : "text-accent"
+                  }`}
+                >
                   {priceText}
                 </span>
+                {specimen.availability !== "sold" && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Shipping from $45 · Fully insured
+                  </p>
+                )}
               </div>
 
-              {/* Purchase / Inquire CTA */}
-              <AddToCartButton
+              {/* CTA + Mobile Sticky Bar */}
+              <SpecimenCTASection
                 specimenId={specimen.id}
+                specimenName={specimen.name}
+                priceText={priceText}
                 canPurchase={canPurchase}
                 availability={specimen.availability}
               />
+
+              {/* Specs Grid */}
+              {specs.length > 0 && (
+                <div className="border-t border-border pt-6 space-y-0">
+                  {specs.map(({ label, value }) => (
+                    <div
+                      key={label}
+                      className="flex justify-between py-2.5 border-b border-border/50 text-sm"
+                    >
+                      <span className="text-muted-foreground">{label}</span>
+                      <span className="text-foreground text-right max-w-[60%]">
+                        {value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Trust Signals */}
+              <div className="pt-4">
+                <TrustSignals isFromOwnMine={isFromOwnMine} />
+              </div>
             </div>
           </div>
+
+          {/* Related Specimens */}
+          {related.length > 0 && (
+            <div className="mt-20 pt-12 border-t border-border">
+              <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-8">
+                More from this locality
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {related.map((s) => (
+                  <Link
+                    key={s.id}
+                    href={`/specimen/${s.id}`}
+                    className="group block"
+                  >
+                    <div className="silver-border matte-surface rounded-lg overflow-hidden transition-all duration-300 hover:shadow-silver">
+                      <div className="relative aspect-square bg-secondary/30">
+                        <img
+                          src={s.image}
+                          alt={s.name}
+                          className="object-contain p-4 w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-display text-sm text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                          {s.name}
+                        </h3>
+                        <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
+                          {s.locality}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

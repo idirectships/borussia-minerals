@@ -96,7 +96,7 @@ export default function EventsPage() {
             <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
               Find Us
             </span>
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-silver-gradient animate-shimmer mt-4">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mt-4">
               Upcoming Events
             </h1>
             <p className="text-muted-foreground text-lg mt-6 max-w-2xl mx-auto">

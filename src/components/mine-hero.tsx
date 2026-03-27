@@ -21,7 +21,7 @@ export function MineHero({ mine }: MineHeroProps) {
             <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
               Our Mine
             </span>
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-silver-gradient animate-shimmer">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground">
               {mine.name}
             </h1>
           </div>
