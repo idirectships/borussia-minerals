@@ -10,6 +10,7 @@ import { CONTACT_EMAIL, INSTAGRAM_HANDLE } from "@/lib/data";
 import { getPageCopy } from "@/lib/google-copy";
 import { fetchSpecimens } from "@/lib/google-sheets";
 import { formatPrice } from "@/lib/utils";
+import { isPreviewEnabled } from "@/lib/preview-mode";
 
 export const revalidate = 60;
 
@@ -20,9 +21,10 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const [copy, specimens] = await Promise.all([
+  const [copy, specimens, isPreview] = await Promise.all([
     getPageCopy("homepage"),
     fetchSpecimens(),
+    isPreviewEnabled(),
   ]);
 
   // Show up to 4 featured/available specimens
@@ -110,6 +112,22 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* Preview-only demo section — gated behind draftMode() */}
+      {isPreview && (
+        <section className="px-6 md:px-12 py-6 border-t border-accent/20 bg-accent/5">
+          <div className="max-w-7xl mx-auto flex items-start gap-4">
+            <span className="inline-block bg-accent/20 text-accent text-[10px] uppercase tracking-[0.3em] px-2 py-1 rounded flex-shrink-0">
+              Preview
+            </span>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              You&apos;re seeing this because preview mode is enabled.
+              Unreleased design and feature changes will appear here before
+              they ship to the public site.
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Featured Specimens */}
       {featured.length > 0 && (
