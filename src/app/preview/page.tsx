@@ -80,6 +80,26 @@ export default async function PreviewPage({
             </div>
           </div>
 
+          {/* Enable Preview Mode CTA */}
+          <div className="silver-border matte-surface rounded-lg p-6 mb-8">
+            <h2 className="font-display text-xl text-foreground mb-2">
+              Try Preview Mode
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Turn on preview mode to see unreleased design and feature changes
+              on the live site before they ship publicly. A banner will appear
+              at the top of every page while it&apos;s active — click{" "}
+              <span className="text-accent">Exit preview</span> in that banner
+              to turn it back off.
+            </p>
+            <a
+              href={`/api/preview/enable?token=${encodeURIComponent(PREVIEW_TOKEN)}&redirect=/`}
+              className="inline-block text-xs uppercase tracking-[0.2em] bg-accent text-accent-foreground px-4 py-2 rounded hover:opacity-90 transition-opacity"
+            >
+              Enable preview mode →
+            </a>
+          </div>
+
           {/* Quick links */}
           <div className="flex flex-wrap gap-3">
             <a href="#specimens" className="text-xs uppercase tracking-[0.2em] text-primary border border-primary/30 px-4 py-2 rounded hover:bg-primary/10 transition-colors">
