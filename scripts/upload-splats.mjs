@@ -37,7 +37,7 @@ if (existsSync(envPath)) {
 
 const DRY_RUN = process.argv.includes("--dry-run");
 const LOCAL_DIR = process.env.LOCAL_SPLAT_DIR ?? "/tmp/borussia-splats";
-const GUS_HOST = "gus@100.109.154.84";
+const GUS_HOST = "gus@100.115.27.81";
 const GUS_BASE = "/Users/gus/splat-projects";
 
 // Map local .ply filename → { specimenId, gusPath (relative to GUS_BASE) }
