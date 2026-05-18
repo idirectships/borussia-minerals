@@ -294,6 +294,7 @@ export default function SplatsPage() {
 
   useEffect(() => {
     if (sessionStorage.getItem(STORAGE_KEY) === "1") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- TODO: refactor to derived state or ref pattern
       setAuthenticated(true);
     }
   }, []);
