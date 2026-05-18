@@ -40,7 +40,7 @@ export function SpecimenSplatViewer({
   className = "",
 }: SpecimenSplatViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const viewerRef = useRef<any>(null);
   const rotationFrameRef = useRef<number>(0);
   const hasInteractedRef = useRef(false);
@@ -155,7 +155,7 @@ export function SpecimenSplatViewer({
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     let viewer: any = null;
 
     const init = async () => {
