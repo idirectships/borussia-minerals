@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { fetchSpecimenById } from "@/lib/google-sheets";
+import { fetchSpecimenById } from "@/lib/data-backend";
 
 const PRICE_THRESHOLD = 5000;
 
