@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { markSpecimensAsSold } from "@/lib/google-sheets";
+import * as airtable from "@/lib/airtable";
 
 export async function POST(request: NextRequest) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -47,13 +48,52 @@ export async function POST(request: NextRequest) {
 
       console.log("[stripe-webhook] ORDER COMPLETED:", JSON.stringify(orderDetails, null, 2));
 
-      // Mark sold in Google Sheets
+      // ── Airtable: create Order row ────────────────────────────────────────────
+      let airtableOrderId: string | undefined;
+      try {
+        const result = await airtable.createOrder(session);
+        airtableOrderId = result.id;
+        console.log("[stripe-webhook] Airtable order created:", airtableOrderId);
+      } catch (err) {
+        console.error("[stripe-webhook] Failed to create Airtable order:", err);
+      }
+
+      // ── Airtable: mark specimens as sold ─────────────────────────────────────
       if (specimenIds.length > 0) {
+        // Google Sheets (existing dual-write — kept during migration window)
         try {
           await markSpecimensAsSold(specimenIds);
         } catch (err) {
-          // Log but don't fail the webhook — Stripe will retry on 5xx, not needed here
-          console.error("[stripe-webhook] Failed to mark specimens as sold:", err);
+          console.error("[stripe-webhook] Failed to mark specimens as sold in Sheets:", err);
+        }
+
+        // Airtable (Phase 5 side effect)
+        try {
+          await airtable.markSpecimensAsSold(specimenIds);
+          console.log("[stripe-webhook] Airtable specimens marked sold:", specimenIds);
+        } catch (err) {
+          console.error("[stripe-webhook] Failed to mark specimens as sold in Airtable:", err);
+        }
+
+        // ── ISR revalidation ──────────────────────────────────────────────────
+        const revalidateSecret = process.env.REVALIDATE_SECRET;
+        if (revalidateSecret) {
+          const baseUrl = process.env.VERCEL_URL
+            ? `https://${process.env.VERCEL_URL}`
+            : process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+          const revalidatePaths = ["/store", ...specimenIds.map((id) => `/specimens/${id}`)];
+          for (const path of revalidatePaths) {
+            try {
+              await fetch(
+                `${baseUrl}/api/revalidate?secret=${revalidateSecret}&path=${encodeURIComponent(path)}`,
+              );
+            } catch (err) {
+              console.error(`[stripe-webhook] ISR revalidation failed for ${path}:`, err);
+            }
+          }
+        } else {
+          console.warn("[stripe-webhook] REVALIDATE_SECRET not set — skipping ISR revalidation");
         }
       } else {
         console.warn("[stripe-webhook] checkout.session.completed had no specimen_ids in metadata", {
@@ -65,6 +105,41 @@ export async function POST(request: NextRequest) {
       // Required data is in `orderDetails` above. Send:
       //   - Customer confirmation to orderDetails.customerEmail
       //   - Internal order notification to borussiaminerals@gmail.com
+      void airtableOrderId; // suppress unused-variable warning; used in logs above
+      break;
+    }
+
+    case "charge.refunded": {
+      const charge = event.data.object as Stripe.Charge;
+      // Resolve the Stripe session ID from payment_intent if available
+      const paymentIntentId = typeof charge.payment_intent === "string"
+        ? charge.payment_intent
+        : undefined;
+      console.log("[stripe-webhook] Charge refunded:", charge.id, "PI:", paymentIntentId);
+
+      // Look up order by payment_intent to find the session ID
+      // The Order row was created with stripe_payment_intent populated by createOrder.
+      // updateOrderStatus searches by stripe_session_id; if we only have the PI we
+      // cannot resolve directly here without an extra lookup — log and leave for manual
+      // reconciliation in Airtable. Director can also trigger via Airtable automation.
+      //
+      // If metadata on the charge carries a session ID, use it directly.
+      const sessionId = charge.metadata?.stripe_session_id;
+      if (sessionId) {
+        try {
+          await airtable.updateOrderStatus(sessionId, "refunded");
+          console.log("[stripe-webhook] Airtable order marked refunded for session:", sessionId);
+        } catch (err) {
+          console.error("[stripe-webhook] Failed to update Airtable order status to refunded:", err);
+        }
+      } else {
+        console.warn(
+          "[stripe-webhook] charge.refunded: no stripe_session_id in metadata — " +
+          "manual reconciliation required in Airtable. Charge:", charge.id,
+        );
+      }
+      // Specimens are NOT automatically flipped back to available per spec line 224.
+      // Director resolves per-case via Airtable UI.
       break;
     }
 
