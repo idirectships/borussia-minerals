@@ -153,6 +153,82 @@ export async function fetchSpecimenById(
   return specimens.find((s) => s.id === id);
 }
 
+// Column map: Specimen field → Sheet column letter (A-O)
+// K (photoIds) is a SheetRow field, not on Specimen — not included here.
+const FIELD_COLUMN_MAP: Partial<Record<keyof Specimen, string>> = {
+  id:            "A",
+  name:          "B",
+  mineralGroup:  "C",
+  locality:      "D",
+  crystalSystem: "E",
+  dimensions:    "F",
+  weight:        "G",
+  price:         "H",
+  availability:  "I",
+  description:   "J",
+  publishStatus: "M",
+  tier:          "N",
+  narrative:     "O",
+};
+
+/**
+ * Updates a single field on a specimen row in the Google Sheet.
+ *
+ * @param specimenId - The specimen slug (matches column A).
+ * @param field      - A key of the Specimen type to update (maps to its Sheet column).
+ * @param value      - The raw string value to write (same format as the Sheet stores it).
+ * @throws If the specimen is not found, or if the field has no column mapping.
+ */
+export async function updateSpecimenField(
+  specimenId: string,
+  field: keyof Specimen,
+  value: string
+): Promise<void> {
+  const col = FIELD_COLUMN_MAP[field];
+  if (!col) {
+    throw new Error(`updateSpecimenField: no column mapping for field "${String(field)}"`);
+  }
+
+  const auth = getAuth();
+  if (!auth) {
+    throw new Error("updateSpecimenField: GOOGLE_SERVICE_ACCOUNT_KEY not configured");
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+  const sheetId = getSheetId();
+
+  // Fetch all IDs from column A to find the row position (data starts at row 2)
+  const idResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId: sheetId,
+    range: "Inventory!A2:A",
+  });
+
+  const idRows = idResponse.data.values ?? [];
+  const rowIndex = idRows.findIndex((row) => row[0] === specimenId);
+  if (rowIndex === -1) {
+    throw new Error(`updateSpecimenField: specimen "${specimenId}" not found in sheet`);
+  }
+
+  // Sheet row number: data starts at row 2, so rowIndex 0 → row 2
+  const sheetRow = rowIndex + 2;
+  const range = `Inventory!${col}${sheetRow}`;
+
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: sheetId,
+    requestBody: {
+      valueInputOption: "RAW",
+      data: [{ range, values: [[value]] }],
+    },
+  });
+
+  // Bust the in-process cache so subsequent reads reflect the updated value
+  allSpecimensCache = null;
+
+  console.log(
+    `updateSpecimenField: updated ${specimenId}.${String(field)} → "${value}" at ${range}`
+  );
+}
+
 /**
  * Marks one or more specimens as "sold" in the Google Sheet.
  * Column I (index 8, 1-based = column 9) is "availability".

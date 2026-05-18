@@ -30,6 +30,12 @@ export async function fetchSpecimenById(id: string): Promise<import("@/types").S
   return result ?? null;
 }
 
+// ── Google Sheets-only extras ─────────────────────────────────────────────────
+// updateSpecimenField: patches a single field on a specimen row by Specimen key.
+// Not wired through the Airtable path — callers must use @/lib/airtable directly
+// when USE_AIRTABLE_BACKEND=true.
+export const updateSpecimenField = sheets.updateSpecimenField;
+
 // ── Airtable-only extras (only available when flag is on) ─────────────────────
 // Callers that need these should import from @/lib/airtable directly.
 // They are not re-exported here because google-sheets.ts does not implement them.
